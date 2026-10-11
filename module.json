@@ -1,8 +1,8 @@
 {
   "id": "vyrmhal-title-card",
   "title": "Session Title Card",
-  "description": "Affiche une carte de titre cinematique au centre de l'ecran de tous les joueurs, declenchee par le MJ avant le debut d'une session. / Displays a cinematic title card on every connected screen, triggered by the GM before a session starts.",
-  "version": "1.1.0",
+  "description": "<p>Affiche une carte de titre cinématique au centre de l'écran de tous les joueurs, déclenchée par le MJ avant le début d'une session.</p><p lang=\"en\">Displays a cinematic title card on every connected screen, triggered by the GM before a session starts.</p>",
+  "version": "1.2.0",
   "authors": [
     {
       "name": "Vyrmhal"

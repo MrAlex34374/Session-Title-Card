@@ -39,13 +39,13 @@ Trois façons de l'ouvrir :
 - **Texte d'ambiance** : optionnel, petit et en italique (date, lieu...).
 - **Image de fond** : optionnelle, choisie avec le sélecteur de fichiers.
 - **Son d'intro** et **volume** : optionnels.
-- **Fondu d'entrée, durée d'affichage, fondu de sortie** : en millisecondes, par défaut 1500, 5000 et 1500.
+- **Fondu d'entrée, durée d'affichage, fondu de sortie** : saisis en secondes dans les options avancées (par défaut 1,5, 5 et 1,5). Les presets et l'API restent en millisecondes. La vue rapide propose Court (x0,5), Normal et Long (x2).
 - **Opacité du fond noir** : de 0 à 1, par défaut 0,92.
 - **Compteur de session** : voir plus bas.
 - **Diffusion** : choix des destinataires (voir plus bas).
 - **Presets** : charger, enregistrer, supprimer.
 
-La fenêtre est organisée en onglets : Textes, Image et son, Durées et fond, Diffusion, Presets. Les boutons du bas restent visibles quel que soit l'onglet.
+La fenêtre s'ouvre sur la vue **Lancer vite** : titre, sous-titre, n° de session, type d'affichage, durée Court/Normal/Long, aperçu miniature en direct avec un badge de contraste WCAG (OK à partir de 4,5:1, calculé contre le pire fond possible sous le voile noir), puis les boutons Aperçu / Afficher à tous. Le bouton **Options avancées** déploie les onglets : Textes, Image et son, Durées et fond, Diffusion, Presets. Les boutons du bas restent visibles dans les deux vues.
 
 Les valeurs saisies sont mémorisées dans votre navigateur et restaurées à la prochaine ouverture.
 
@@ -78,7 +78,7 @@ L'aperçu (moi seul) reste le moyen de voir la carte avant de l'envoyer.
 
 ### Fermer la carte
 
-Le MJ peut fermer la carte pour tout le monde à tout moment avec la touche **Échap** ou avec le petit bouton discret en bas à droite de l'overlay. La fermeture se fait par un fondu court (800 ms maximum). Les joueurs n'ont ni bouton ni raccourci pour la fermer.
+Le MJ peut fermer la carte pour tout le monde à tout moment avec la touche **Échap** (carte plein écran ; sans effet pendant la saisie dans un champ) ou avec le bouton visible en bas à droite de l'overlay (44 px minimum, anneau de focus). Pour un bandeau, Échap ne le ferme que si son bouton a le focus. La fermeture se fait par un fondu court (800 ms maximum). Les joueurs n'ont ni bouton ni raccourci pour la fermer.
 
 ### Compteur de session
 

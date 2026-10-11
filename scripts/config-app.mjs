@@ -2,7 +2,8 @@
  * GM configuration window. The form is built with DOM calls (no template file) and drives the module's
  * public API, exactly like a macro would.
  */
-import {MODULE_ID, LIMITS, t, getDefaults} from "./settings.mjs";
+import {MODULE_ID, DEFAULT_FONT, LIMITS, t, getDefaults, getStyleSettings} from "./settings.mjs";
+import {cleanMedia, toUrl} from "./overlay.mjs";
 import {listPresets, getPreset, savePreset, deletePreset} from "./presets.mjs";
 
 const {ApplicationV2, DialogV2} = foundry.applications.api;
@@ -20,6 +21,18 @@ const TABS = [
   {id: "audience", label: "VTC.Config.Section.Audience"},
   {id: "presets", label: "VTC.Config.Section.Presets"}
 ];
+
+/** Durations are stored and sent in milliseconds, but typed and shown in seconds in the advanced options. */
+const SECOND_FIELDS = new Set(["fadeIn", "hold", "fadeOut"]);
+
+/** "Quick launch" durations: multiplier applied to the defaults of the selected display mode. */
+const DURATIONS = [
+  {id: "short", label: "VTC.Config.Duration.Short", factor: 0.5},
+  {id: "normal", label: "VTC.Config.Duration.Normal", factor: 1},
+  {id: "long", label: "VTC.Config.Duration.Long", factor: 2}
+];
+
+const MIN_CONTRAST = 4.5;
 
 /** Card fields sent to the API and stored in presets. */
 const CARD_FIELDS = ["mode", "title", "subtitle", "tagline", "image", "sound", "volume", "fadeIn", "hold", "fadeOut", "opacity"];
@@ -107,8 +120,39 @@ function optionalNumber(value) {
   return Number.isFinite(number) ? number : undefined;
 }
 
+/** Field typed in seconds, returned in milliseconds (or undefined when empty). */
+function optionalSeconds(value) {
+  const seconds = optionalNumber(value);
+  return seconds === undefined ? undefined : Math.round(seconds * 1000);
+}
+
 function pickCard(state) {
   return Object.fromEntries(CARD_FIELDS.filter(key => state[key] !== undefined).map(key => [key, state[key]]));
+}
+
+/* ---------- Contrast (WCAG 2.x) ---------- */
+
+/** Parse #rgb, #rgba, #rrggbb or #rrggbbaa. The alpha channel is ignored. */
+function parseHex(value) {
+  const match = /^#([0-9a-f]{3,8})$/i.exec(String(value ?? ""));
+  if (!match) return null;
+  let hex = match[1];
+  if (hex.length === 3 || hex.length === 4) hex = [...hex].map(char => char + char).join("");
+  if (hex.length !== 6 && hex.length !== 8) return null;
+  return [0, 2, 4].map(index => parseInt(hex.slice(index, index + 2), 16));
+}
+
+function luminance([r, g, b]) {
+  const [lr, lg, lb] = [r, g, b].map(channel => {
+    const c = channel / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+}
+
+export function contrastRatio(foreground, background) {
+  const [a, b] = [luminance(foreground), luminance(background)].sort((x, y) => y - x);
+  return (a + 0.05) / (b + 0.05);
 }
 
 const getApi = () => game.modules.get(MODULE_ID).api;
@@ -133,7 +177,8 @@ export class TitleCardConfig extends ApplicationV2 {
       closeAll: TitleCardConfig.#onCloseAll,
       loadPreset: TitleCardConfig.#onLoadPreset,
       savePreset: TitleCardConfig.#onSavePreset,
-      deletePreset: TitleCardConfig.#onDeletePreset
+      deletePreset: TitleCardConfig.#onDeletePreset,
+      toggleAdvanced: TitleCardConfig.#onToggleAdvanced
     }
   };
 
@@ -148,6 +193,13 @@ export class TitleCardConfig extends ApplicationV2 {
   #excluded = new Set();
   #tabButtons = new Map();
   #tabPanels = new Map();
+  #advanced = false;
+  #advancedBox = null;
+  #advancedToggle = null;
+  #durationBox = null;
+  #durationNote = null;
+  #mini = null;
+  #contrast = null;
 
   /** Open the window, or bring it to front without losing what is being typed. */
   static open() {
@@ -191,17 +243,8 @@ export class TitleCardConfig extends ApplicationV2 {
 
     const panels = {
       text: [
-        this.#buildModeGroup(state.mode),
-        formGroup("VTC.Config.Field.Title",
-          textInput("title", state.title, {max: LIMITS.title, placeholder: t("VTC.Config.Field.TitlePlaceholder")}),
-          "VTC.Config.Field.TitleHint"),
-        formGroup("VTC.Config.Field.Subtitle", textInput("subtitle", state.subtitle, {max: LIMITS.subtitle})),
         formGroup("VTC.Config.Field.Tagline", textInput("tagline", state.tagline, {max: LIMITS.tagline}),
-          "VTC.Config.Field.TaglineHint"),
-        fieldset("VTC.Config.Section.Counter",
-          formGroup("VTC.Config.Field.UseCounter", checkbox("useCounter", state.useCounter),
-            "VTC.Config.Field.UseCounterHint"),
-          formGroup("VTC.Config.Field.Number", numberInput("n", state.n, {min: 0, max: 99999, step: 1})))
+          "VTC.Config.Field.TaglineHint")
       ],
       media: [
         this.#withClass(formGroup("VTC.Config.Field.Image",
@@ -214,11 +257,11 @@ export class TitleCardConfig extends ApplicationV2 {
       ],
       timing: [
         formGroup("VTC.Config.Field.FadeIn",
-          numberInput("fadeIn", state.fadeIn, {min: LIMITS.fade.min, max: LIMITS.fade.max, step: 100})),
+          numberInput("fadeIn", state.fadeIn / 1000, {min: LIMITS.fade.min / 1000, max: LIMITS.fade.max / 1000, step: 0.1})),
         formGroup("VTC.Config.Field.Hold",
-          numberInput("hold", state.hold, {min: LIMITS.hold.min, max: LIMITS.hold.max, step: 100})),
+          numberInput("hold", state.hold / 1000, {min: LIMITS.hold.min / 1000, max: LIMITS.hold.max / 1000, step: 0.1})),
         formGroup("VTC.Config.Field.FadeOut",
-          numberInput("fadeOut", state.fadeOut, {min: LIMITS.fade.min, max: LIMITS.fade.max, step: 100})),
+          numberInput("fadeOut", state.fadeOut / 1000, {min: LIMITS.fade.min / 1000, max: LIMITS.fade.max / 1000, step: 0.1})),
         formGroup("VTC.Config.Field.Opacity",
           HTMLRangePickerElement.create({name: "opacity", value: state.opacity, min: 0, max: 1, step: 0.01}))
       ],
@@ -228,6 +271,7 @@ export class TitleCardConfig extends ApplicationV2 {
 
     // All panels stay in the form (hidden ones included) so every value is always read.
     const nav = element("nav", "vtc-tabs");
+    nav.setAttribute("aria-label", t("VTC.Config.Quick.Advanced"));
     nav.setAttribute("role", "tablist");
     const body = element("div", "vtc-panels");
     this.#tabButtons.clear();
@@ -260,11 +304,202 @@ export class TitleCardConfig extends ApplicationV2 {
       button("closeAll", "VTC.Config.Button.CloseAll", "fa-solid fa-xmark")
     );
 
-    form.append(nav, body, footer);
+    const advanced = this.#advancedBox = element("div", "vtc-advanced");
+    advanced.id = "vtc-advanced";
+    advanced.append(nav, body);
+
+    form.append(this.#buildQuick(state), this.#buildAdvancedToggle(), advanced, footer);
+    form.addEventListener("input", () => this.#onFormChange());
+    form.addEventListener("change", () => this.#onFormChange());
     this.#syncMode();
     this.#showTab(this.#tab);
     this.#refreshPresets();
+    this.#setAdvanced(this.#advanced);
+    this.#syncDuration();
+    this.#updatePreview();
     return form;
+  }
+
+  /* ---------- Quick launch view ---------- */
+
+  #buildQuick(state) {
+    const quick = element("section", "vtc-quick");
+    quick.setAttribute("aria-label", t("VTC.Config.Quick.Heading"));
+
+    const counterRow = element("div", "vtc-quick-row");
+    counterRow.append(
+      formGroup("VTC.Config.Field.UseCounter", checkbox("useCounter", state.useCounter), "VTC.Config.Field.UseCounterHint"),
+      formGroup("VTC.Config.Field.Number", numberInput("n", state.n, {min: 0, max: 99999, step: 1}))
+    );
+
+    quick.append(
+      formGroup("VTC.Config.Field.Title",
+        textInput("title", state.title, {max: LIMITS.title, placeholder: t("VTC.Config.Field.TitlePlaceholder")}),
+        "VTC.Config.Field.TitleHint"),
+      formGroup("VTC.Config.Field.Subtitle", textInput("subtitle", state.subtitle, {max: LIMITS.subtitle})),
+      counterRow,
+      this.#buildModeGroup(state.mode),
+      this.#buildDurationGroup(),
+      this.#buildMini()
+    );
+    return quick;
+  }
+
+  /** Short / Normal / Long, applied to the three durations of the advanced options. */
+  #buildDurationGroup() {
+    const box = this.#durationBox = element("fieldset", "vtc-duration");
+    box.append(element("legend", "", t("VTC.Config.Duration.Label")));
+    const row = element("div", "vtc-duration-options");
+    for (const choice of DURATIONS) {
+      const label = element("label", "vtc-duration-choice");
+      const radio = element("input");
+      radio.type = "radio";
+      radio.name = "durationPreset";
+      radio.value = choice.id;
+      radio.addEventListener("change", () => {
+        if (radio.checked) this.#applyDuration(choice.id);
+      });
+      label.append(radio, element("span", "", t(choice.label)));
+      row.append(label);
+    }
+    this.#durationNote = element("p", "hint vtc-duration-note", t("VTC.Config.Duration.Custom"));
+    box.append(row, this.#durationNote);
+    return box;
+  }
+
+  /** Live miniature of the card plus the contrast badge. Text is only ever set with textContent. */
+  #buildMini() {
+    const figure = element("figure", "vtc-preview");
+    const mini = this.#mini = {
+      root: element("div", "vtc-mini"),
+      image: element("div", "vtc-mini-image"),
+      veil: element("div", "vtc-mini-veil"),
+      title: element("div", "vtc-mini-title"),
+      subtitle: element("div", "vtc-mini-subtitle"),
+      tagline: element("div", "vtc-mini-tagline")
+    };
+    const content = element("div", "vtc-mini-content");
+    content.append(mini.title, mini.subtitle, mini.tagline);
+    mini.root.append(mini.veil, mini.image, content);
+    mini.root.setAttribute("role", "img");
+    mini.root.setAttribute("aria-label", t("VTC.Config.Preview.Label"));
+
+    const caption = element("figcaption", "vtc-preview-caption");
+    caption.append(element("span", "vtc-preview-label", t("VTC.Config.Preview.Label")));
+    const badge = this.#contrast = element("span", "vtc-contrast");
+    badge.setAttribute("role", "status");
+    caption.append(badge);
+    figure.append(mini.root, caption);
+    return figure;
+  }
+
+  #buildAdvancedToggle() {
+    const toggle = this.#advancedToggle = element("button", "vtc-advanced-toggle");
+    toggle.type = "button";
+    toggle.dataset.action = "toggleAdvanced";
+    toggle.setAttribute("aria-controls", "vtc-advanced");
+    return toggle;
+  }
+
+  #setAdvanced(on) {
+    this.#advanced = Boolean(on);
+    this.#advancedBox.hidden = !this.#advanced;
+    this.#form.classList.toggle("vtc-is-advanced", this.#advanced);
+    const toggle = this.#advancedToggle;
+    toggle.setAttribute("aria-expanded", String(this.#advanced));
+    toggle.replaceChildren();
+    const icon = element("i", this.#advanced ? "fa-solid fa-chevron-up" : "fa-solid fa-sliders");
+    icon.setAttribute("aria-hidden", "true");
+    toggle.append(icon, document.createTextNode(` ${t(this.#advanced ? "VTC.Config.Quick.Simple" : "VTC.Config.Quick.Advanced")}`));
+    if (this.#advanced) this.#showTab(this.#tab);
+  }
+
+  /** Values (ms) of a quick duration for a display mode. */
+  #durationValues(mode, id) {
+    const factor = DURATIONS.find(choice => choice.id === id)?.factor ?? 1;
+    const defaults = getDefaults(mode);
+    const scale = (value, limit) => Math.min(limit.max, Math.max(limit.min, Math.round(value * factor / 100) * 100));
+    return {
+      fadeIn: scale(defaults.fadeIn, LIMITS.fade),
+      hold: scale(defaults.hold, LIMITS.hold),
+      fadeOut: scale(defaults.fadeOut, LIMITS.fade)
+    };
+  }
+
+  /** Which quick duration matches the three fields for a mode, or "custom". */
+  #detectDuration(mode) {
+    const state = this.#read();
+    for (const choice of DURATIONS) {
+      const values = this.#durationValues(mode, choice.id);
+      if (Object.keys(values).every(key => state[key] === values[key])) return choice.id;
+    }
+    return "custom";
+  }
+
+  #applyDuration(id) {
+    const values = this.#durationValues(this.#mode, id);
+    for (const [key, value] of Object.entries(values)) this.#setField(key, value);
+    this.#onFormChange();
+  }
+
+  #syncDuration() {
+    const detected = this.#detectDuration(this.#mode);
+    for (const radio of this.#durationBox.querySelectorAll('input[type="radio"]')) radio.checked = radio.value === detected;
+    this.#durationNote.hidden = detected !== "custom";
+  }
+
+  #onFormChange() {
+    if (!this.#form || !this.#mini) return;
+    this.#syncDuration();
+    this.#updatePreview();
+  }
+
+  /** Redraw the miniature and the contrast badge from the current form values. */
+  #updatePreview() {
+    const mini = this.#mini;
+    if (!mini) return;
+    const state = this.#read();
+    const style = getStyleSettings();
+    const banner = state.mode === "banner";
+    const resolve = text => (state.useCounter ? text.replace(/\{\{\s*n\s*\}\}/g, String(state.n)) : text);
+    const texts = {title: resolve(state.title).trim(), subtitle: resolve(state.subtitle).trim(), tagline: resolve(state.tagline).trim()};
+    const empty = !texts.title && !texts.subtitle && !texts.tagline;
+
+    const font = Object.hasOwn(CONFIG.fontDefinitions ?? {}, style.fontFamily) ? style.fontFamily : DEFAULT_FONT;
+    const opacity = state.opacity ?? getDefaults(state.mode).opacity;
+    const root = mini.root;
+    root.classList.toggle("vtc-mini-banner", banner);
+    root.classList.toggle("vtc-mini-empty", empty);
+    root.style.setProperty("--vtc-font", `"${font.replace(/["\\;{}]/g, "")}", "${DEFAULT_FONT}", sans-serif`);
+    root.style.setProperty("--vtc-title-color", style.titleColor);
+    root.style.setProperty("--vtc-subtitle-color", style.subtitleColor);
+    root.style.setProperty("--vtc-title-size", String(style.titleSize));
+    root.style.setProperty("--vtc-veil", String(opacity));
+
+    mini.title.textContent = empty ? t("VTC.Config.Preview.Empty") : texts.title;
+    mini.subtitle.textContent = texts.subtitle;
+    mini.tagline.textContent = texts.tagline;
+
+    const image = banner ? "" : cleanMedia({image: state.image}).image;
+    mini.image.style.backgroundImage = image ? `url("${toUrl(image)}")` : "";
+    mini.image.hidden = !image;
+
+    // Worst case: the black veil sits on a white game scene. Text is checked against that background.
+    const level = Math.round(255 * (1 - Math.min(1, Math.max(0, opacity))));
+    const background = [level, level, level];
+    const colors = [parseHex(style.titleColor), parseHex(style.subtitleColor)].filter(Boolean);
+    const badge = this.#contrast;
+    if (!colors.length) {
+      badge.textContent = "";
+      return;
+    }
+    const ratio = Math.min(...colors.map(color => contrastRatio(color, background)));
+    const ok = ratio >= MIN_CONTRAST;
+    const shown = ratio.toLocaleString(game.i18n.lang || undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1});
+    badge.classList.toggle("ok", ok);
+    badge.classList.toggle("low", !ok);
+    badge.textContent = t(ok ? "VTC.Config.Contrast.Ok" : "VTC.Config.Contrast.Low", {ratio: shown})
+      + (image ? ` ${t("VTC.Config.Contrast.Image")}` : "");
   }
 
   #withClass(node, className) {
@@ -287,11 +522,15 @@ export class TitleCardConfig extends ApplicationV2 {
     const next = this.#form.querySelector('[name="mode"]').value === "banner" ? "banner" : "full";
     const previous = getDefaults(this.#mode);
     const target = getDefaults(next);
+    const kind = this.#detectDuration(this.#mode);
     for (const key of ["fadeIn", "hold", "fadeOut", "opacity"]) {
       const field = this.#form.querySelector(`[name="${key}"]`);
       if (field && Number(field.value) === previous[key]) this.#setField(key, target[key]);
     }
     this.#syncMode();
+    // A quick duration (short, normal, long) is kept when the display mode changes.
+    if (kind !== "custom") this.#applyDuration(kind);
+    else this.#onFormChange();
   }
 
   /** Mirror the selected mode on the form, which hides the image field for banners. */
@@ -437,9 +676,9 @@ export class TitleCardConfig extends ApplicationV2 {
       image: String(raw.image ?? "").trim(),
       sound: String(raw.sound ?? "").trim(),
       volume: optionalNumber(raw.volume),
-      fadeIn: optionalNumber(raw.fadeIn),
-      hold: optionalNumber(raw.hold),
-      fadeOut: optionalNumber(raw.fadeOut),
+      fadeIn: optionalSeconds(raw.fadeIn),
+      hold: optionalSeconds(raw.hold),
+      fadeOut: optionalSeconds(raw.fadeOut),
       opacity: optionalNumber(raw.opacity),
       useCounter: Boolean(raw.useCounter),
       n: Math.max(0, Math.trunc(Number(raw.n)) || 0)
@@ -450,6 +689,7 @@ export class TitleCardConfig extends ApplicationV2 {
     const field = this.#form?.querySelector(`[name="${name}"]`);
     if (!field) return;
     if (field.type === "checkbox") field.checked = Boolean(value);
+    else if (SECOND_FIELDS.has(name) && Number.isFinite(Number(value))) field.value = Math.round(Number(value)) / 1000;
     else field.value = value;
   }
 
@@ -506,6 +746,10 @@ export class TitleCardConfig extends ApplicationV2 {
     this.#showTab(target.dataset.tab);
   }
 
+  static #onToggleAdvanced() {
+    this.#setAdvanced(!this.#advanced);
+  }
+
   static #onPreload() {
     const state = this.#read();
     const recipients = this.#recipients();
@@ -543,6 +787,7 @@ export class TitleCardConfig extends ApplicationV2 {
       if (preset.data[key] !== undefined) this.#setField(key, preset.data[key]);
     }
     this.#syncMode();
+    this.#onFormChange();
     ui.notifications.info(t("VTC.Config.Presets.Loaded", {name: preset.name}));
   }
 
