@@ -2,6 +2,15 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
+## [1.2.1] - 2026-10-12
+
+### Ajouté
+- Installation par Manifest URL (`manifest`, `download`, `url`, `bugs` dans `module.json`).
+- Publication automatique d'une release (GitHub Actions) à chaque tag `vX.Y.Z`.
+
+### Modifié
+- Auteur et titulaire de la licence : MrAlex34374.
+
 ## [1.2.0] - 2026-10-12
 
 ### Ajouté

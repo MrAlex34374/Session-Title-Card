@@ -4,6 +4,16 @@ Module Foundry VTT qui affiche une carte de titre cinématique au centre de l'é
 
 Le module est générique : rien n'est lié à une campagne en particulier. Il n'a aucune dépendance externe, aucun build, et ne fait aucun appel réseau (seuls l'image et le son choisis sont chargés depuis votre propre serveur Foundry).
 
+## Installation par Manifest URL
+
+Dans Foundry : **Add-on Modules → Install Module**, collez cette adresse dans le champ **Manifest URL**, puis **Install** :
+
+```
+https://github.com/MrAlex34374/Session-Title-Card/releases/latest/download/module.json
+```
+
+Activez ensuite le module dans votre monde (Foundry v13 minimum, v14 vérifiée).
+
 ## Compatibilité
 
 - Foundry VTT 13 minimum, vérifié pour la 14 (lecture du code source de la 14.365 et de la 14.366).

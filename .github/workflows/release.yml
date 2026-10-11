@@ -1,0 +1,27 @@
+name: Release
+
+# Publie module.json + module.zip sur chaque tag vX.Y.Z.
+# Le manifest du module pointe sur releases/latest/download/module.json.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Aligner module.json sur le tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          jq --arg v "$VERSION" --arg d "https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/module.zip" '.version=$v | .download=$d' module.json > module.tmp
+          mv module.tmp module.json
+      - name: Archive
+        run: zip -r module.zip module.json scripts styles lang LICENSE README.md CHANGELOG.md
+      - name: Publier
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release create "$GITHUB_REF_NAME" module.json module.zip --title "$GITHUB_REF_NAME" --generate-notes
