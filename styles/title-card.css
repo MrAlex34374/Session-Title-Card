@@ -1,0 +1,566 @@
+/* Session Title Card: overlay and configuration window styles. */
+
+/* ---------- Overlay ---------- */
+
+.vtc-overlay {
+  /* Fallbacks only: every value is overridden inline from the world settings. */
+  --vtc-font: "Signika", sans-serif;
+  --vtc-title-color: #f2e6c9;
+  --vtc-subtitle-color: #c9b98f;
+  --vtc-title-size: 72;
+  /* Text scale: 1 for a full card, smaller for a banner. */
+  --vtc-scale: 1;
+  /* Horizontal distance texts travel while entering. Each text sets its own direction in --vtc-dir (-1 left, 1 right). */
+  --vtc-shift: min(7vw, 5rem);
+  --vtc-shadow: 0 2px 18px rgba(0, 0, 0, 0.65);
+  --vtc-fade-in: 1500ms;
+  --vtc-fade-out: 1500ms;
+  --vtc-step: 450ms;
+  --vtc-backdrop-opacity: 0.92;
+  --vtc-start-opacity: 0;
+  /* Opacity of the background image, drawn over the black veil. Override it in a custom CSS rule if needed. */
+  --vtc-image-opacity: 0.55;
+
+  position: fixed;
+  inset: 0;
+  /* Above every Foundry window, dialog, notification and tooltip. */
+  z-index: 2147483000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* Blocks clicks on the game while the card is shown. */
+  pointer-events: auto;
+  cursor: default;
+  user-select: none;
+  font-family: var(--vtc-font);
+  color: var(--vtc-title-color);
+  line-height: 1.2;
+}
+
+.vtc-overlay *,
+.vtc-overlay *::before,
+.vtc-overlay *::after {
+  box-sizing: border-box;
+}
+
+/* Gives the game back as soon as the card starts to fade out. */
+.vtc-overlay.vtc-leaving {
+  pointer-events: none;
+}
+
+.vtc-backdrop {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: var(--vtc-start-opacity);
+  transition: opacity var(--vtc-fade-in) ease-in-out;
+}
+
+.vtc-visible .vtc-backdrop {
+  opacity: var(--vtc-backdrop-opacity);
+}
+
+.vtc-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity var(--vtc-fade-in) ease-in-out;
+}
+
+/* Vignette that keeps the text readable over any picture. */
+.vtc-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.8) 100%);
+}
+
+.vtc-visible.vtc-has-image .vtc-image {
+  opacity: var(--vtc-image-opacity);
+}
+
+.vtc-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 2.2vmin, 1.4rem);
+  width: min(100%, 1100px);
+  max-height: 100%;
+  padding:
+    max(1.5rem, env(safe-area-inset-top))
+    max(1rem, env(safe-area-inset-right))
+    max(1.5rem, env(safe-area-inset-bottom))
+    max(1rem, env(safe-area-inset-left));
+  text-align: center;
+  text-shadow: var(--vtc-shadow);
+}
+
+/* Staggered entrance: each text waits --vtc-i steps before fading in. */
+.vtc-reveal {
+  margin: 0;
+  opacity: 0;
+  /* Slides in from the side and rises from below. */
+  transform: translate(calc(var(--vtc-shift) * var(--vtc-dir, 0)), 0.35em);
+  transition:
+    opacity var(--vtc-fade-in) ease-out calc(var(--vtc-step) * var(--vtc-i, 1)),
+    transform var(--vtc-fade-in) cubic-bezier(0.16, 1, 0.3, 1) calc(var(--vtc-step) * var(--vtc-i, 1));
+}
+
+.vtc-visible .vtc-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+.vtc-title {
+  max-width: 100%;
+  font-size: min(calc(var(--vtc-title-size) * var(--vtc-scale) * 1px), 11vw, 20vh);
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  /* Balances the trailing letter-spacing so the text looks centered. */
+  padding-inline-start: 0.18em;
+  text-transform: uppercase;
+  color: var(--vtc-title-color);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.vtc-rule {
+  /* Never squeezed to nothing by the flex layout on short screens. */
+  flex: 0 0 auto;
+  width: min(40vw, 20rem);
+  /* 2px, not 1px: with browser zoom or a fractional display scale a 1px box can round down to no pixel at all. */
+  height: 2px;
+  min-height: 2px;
+  background: linear-gradient(90deg, transparent, var(--vtc-subtitle-color), transparent);
+  box-shadow: none;
+}
+
+/* The line must not move: sliding a thin line by a fraction of a pixel makes it blur and flicker. Fade only. */
+.vtc-rule.vtc-reveal,
+.vtc-visible .vtc-rule.vtc-reveal {
+  transform: none;
+  transition: opacity var(--vtc-fade-in) ease-out calc(var(--vtc-step) * var(--vtc-i, 1));
+}
+
+.vtc-subtitle {
+  max-width: 100%;
+  font-size: min(calc(var(--vtc-title-size) * var(--vtc-scale) * 0.32px), 5.5vw, 9vh);
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  padding-inline-start: 0.3em;
+  text-transform: uppercase;
+  color: var(--vtc-subtitle-color);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+.vtc-tagline {
+  max-width: 100%;
+  font-size: min(calc(var(--vtc-title-size) * var(--vtc-scale) * 0.24px), 4.2vw, 6vh);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: var(--vtc-subtitle-color);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+
+/* GM-only close button, discreet until hovered or focused. */
+.vtc-close {
+  position: absolute;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  width: auto;
+  height: auto;
+  min-height: 0;
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  font-family: var(--vtc-font);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  color: var(--vtc-subtitle-color);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(201, 185, 143, 0.35);
+  border-radius: 4px;
+  text-shadow: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--vtc-fade-in) ease-out;
+}
+
+.vtc-visible .vtc-close {
+  opacity: 0.35;
+}
+
+.vtc-visible .vtc-close:hover,
+.vtc-visible .vtc-close:focus-visible {
+  opacity: 1;
+}
+
+/* Banner mode: a lower third that never blocks the game. */
+.vtc-overlay.vtc-banner {
+  --vtc-scale: 0.62;
+  --vtc-shift: min(4vw, 3rem);
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.vtc-banner .vtc-backdrop {
+  top: auto;
+  height: min(55vh, 30rem);
+  background: linear-gradient(to top, #000 0%, rgba(0, 0, 0, 0.6) 45%, rgba(0, 0, 0, 0) 100%);
+}
+
+.vtc-banner .vtc-content {
+  padding-bottom: max(2.5rem, 7vh);
+}
+
+/* Only the GM's close button can be clicked. */
+.vtc-banner .vtc-close {
+  pointer-events: auto;
+}
+
+/* Fade out: every layer fades together, without delay and without movement. */
+.vtc-leaving .vtc-backdrop,
+.vtc-leaving .vtc-image,
+.vtc-leaving .vtc-reveal,
+.vtc-leaving .vtc-close {
+  opacity: 0;
+  transform: none;
+  transition: opacity var(--vtc-fade-out) ease-in;
+  transition-delay: 0ms;
+  pointer-events: none;
+}
+
+/* Reduced motion: plain short fades, no movement (durations are also capped in the script). */
+.vtc-reduced .vtc-reveal,
+.vtc-reduced.vtc-visible .vtc-reveal {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vtc-reveal,
+  .vtc-visible .vtc-reveal {
+    transform: none;
+    transition-delay: 0ms;
+  }
+}
+
+/* Very small screens: tighter letter-spacing so long words do not break too early. */
+@media (max-width: 480px), (max-height: 420px) {
+  .vtc-title {
+    letter-spacing: 0.1em;
+    padding-inline-start: 0.1em;
+  }
+
+  .vtc-subtitle {
+    letter-spacing: 0.16em;
+    padding-inline-start: 0.16em;
+  }
+}
+
+/* ---------- Configuration window ---------- */
+
+/* While a card is displayed it covers the whole screen, so the GM's configuration window and its dialogs are
+   raised above it. Without this, "Fermer la carte" could not be clicked during a full screen card. */
+body.vtc-card-active .application.vtc-config,
+body.vtc-card-active .application.vtc-dialog {
+  z-index: 2147483001 !important;
+}
+
+/* Dark purple palette with ochre accents, matching the card's default colors. */
+.application.vtc-config {
+  --vtc-bg: #150d1c;
+  --vtc-bg-raised: #1f1229;
+  --vtc-purple: #3a1d54;
+  --vtc-purple-bright: #5a2d80;
+  --vtc-purple-line: #54326f;
+  --vtc-ochre: #c9b98f;
+  --vtc-cream: #f2e6c9;
+  --vtc-muted: #a393b8;
+
+  /* Foundry's own variables, so unstyled parts of the window follow the palette. */
+  --background: var(--vtc-bg);
+  --color-header-background: var(--vtc-bg-raised);
+  --color-text-primary: var(--vtc-cream);
+  --color-form-label: var(--vtc-ochre);
+  --color-form-hint: var(--vtc-muted);
+
+  max-height: calc(100vh - 1.5rem);
+  background: linear-gradient(180deg, var(--vtc-bg-raised) 0%, var(--vtc-bg) 100%);
+  border: 1px solid var(--vtc-purple-line);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 12px 40px rgba(20, 5, 35, 0.75);
+  color: var(--vtc-cream);
+}
+
+.application.vtc-config .window-header {
+  background: linear-gradient(180deg, #2c1740 0%, var(--vtc-bg-raised) 100%);
+  border-bottom: 1px solid var(--vtc-purple-line);
+  color: var(--vtc-cream);
+}
+
+.application.vtc-config .window-title {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: var(--font-size-13, 0.8rem);
+}
+
+.application.vtc-config .window-content {
+  overflow-y: auto;
+  min-height: 0;
+  padding: 0;
+  background: transparent;
+}
+
+/* The form is a flex column: tabs on top, scrolling panels, buttons pinned at the bottom. */
+.vtc-config .vtc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 0;
+  padding: 0;
+}
+
+/* Tabs */
+.vtc-config .vtc-tabs {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem 0;
+  border-bottom: 1px solid var(--vtc-purple-line);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.vtc-config .vtc-tab {
+  flex: 1 1 0;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  margin: 0 0 -1px;
+  padding: 0.5rem 0.4rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  color: var(--vtc-muted);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom-color: var(--vtc-purple-line);
+  border-radius: 4px 4px 0 0;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.vtc-config .vtc-tab:hover,
+.vtc-config .vtc-tab:focus-visible {
+  color: var(--vtc-cream);
+  background: rgba(90, 45, 128, 0.25);
+}
+
+.vtc-config .vtc-tab.active {
+  color: var(--vtc-ochre);
+  background: var(--vtc-bg-raised);
+  border-color: var(--vtc-purple-line);
+  border-bottom-color: var(--vtc-bg-raised);
+  box-shadow: inset 0 2px 0 var(--vtc-ochre);
+}
+
+/* Panels: a minimum height keeps the window from jumping when switching tabs. */
+.vtc-config .vtc-panels {
+  flex: 1 1 auto;
+  min-height: 17rem;
+  overflow-y: auto;
+  padding: 0.9rem 1rem;
+}
+
+.vtc-config .vtc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.vtc-config .vtc-panel[hidden] {
+  display: none;
+}
+
+.vtc-config .form-group > label {
+  color: var(--vtc-ochre);
+}
+
+.vtc-config .form-group .hint {
+  color: var(--vtc-muted);
+  font-style: italic;
+}
+
+.vtc-config fieldset {
+  margin: 0.4rem 0 0;
+  padding: 0.5rem 0.75rem 0.75rem;
+  border: 1px solid var(--vtc-purple-line);
+  border-radius: 4px;
+  background: rgba(58, 29, 84, 0.12);
+}
+
+.vtc-config legend {
+  padding: 0 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--vtc-ochre);
+}
+
+/* Inputs */
+.vtc-config input[type="text"],
+.vtc-config input[type="number"],
+.vtc-config select {
+  color: var(--vtc-cream);
+  background: rgba(10, 4, 16, 0.55);
+  border: 1px solid var(--vtc-purple-line);
+  border-radius: 3px;
+}
+
+.vtc-config input[type="text"]::placeholder {
+  color: rgba(163, 147, 184, 0.6);
+}
+
+.vtc-config input:focus,
+.vtc-config select:focus,
+.vtc-config file-picker:focus-within,
+.vtc-config range-picker:focus-within {
+  outline: none;
+  border-color: var(--vtc-ochre);
+  box-shadow: 0 0 0 1px rgba(201, 185, 143, 0.45);
+}
+
+.vtc-config input[type="checkbox"],
+.vtc-config input[type="range"],
+.vtc-config range-picker {
+  accent-color: var(--vtc-purple-bright);
+}
+
+.vtc-config select option {
+  background: var(--vtc-bg-raised);
+  color: var(--vtc-cream);
+}
+
+.vtc-config .vtc-preset-row {
+  gap: 0.35rem;
+}
+
+.vtc-config .vtc-preset-row select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.vtc-config .vtc-preset-row button {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+/* Buttons */
+.vtc-config button:not(.vtc-tab) {
+  color: var(--vtc-cream);
+  background: var(--vtc-purple);
+  border: 1px solid var(--vtc-purple-line);
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+.vtc-config button:not(.vtc-tab):hover,
+.vtc-config button:not(.vtc-tab):focus-visible {
+  background: var(--vtc-purple-bright);
+  border-color: var(--vtc-ochre);
+  box-shadow: 0 0 8px rgba(122, 60, 170, 0.5);
+  outline: none;
+}
+
+/* Buttons stay visible whatever the tab. */
+.vtc-config .form-footer {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0.65rem 1rem;
+  gap: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  border-top: 1px solid var(--vtc-purple-line);
+}
+
+.vtc-config .form-footer button.bold {
+  background: linear-gradient(180deg, var(--vtc-purple-bright), var(--vtc-purple));
+  border-color: var(--vtc-ochre);
+  color: var(--vtc-ochre);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.vtc-config .form-footer button i {
+  margin-right: 0.25rem;
+}
+
+/* Banners have no background image, so its field is hidden. */
+.vtc-config .vtc-mode-banner .vtc-image-group {
+  display: none;
+}
+
+/* Recipient list */
+.vtc-config .vtc-audience-tools {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.vtc-config .vtc-audience-tools button {
+  flex: 0 0 auto;
+  width: auto;
+}
+
+.vtc-config .vtc-audience {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 14rem;
+  overflow-y: auto;
+}
+
+.vtc-config .vtc-audience-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--vtc-purple-line);
+  border-radius: 3px;
+  background: rgba(58, 29, 84, 0.18);
+  cursor: pointer;
+}
+
+.vtc-config .vtc-audience-row.offline {
+  opacity: 0.55;
+}
+
+.vtc-config .vtc-audience-name {
+  flex: 1 1 auto;
+  color: var(--vtc-cream);
+}
+
+.vtc-config .vtc-audience-status {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vtc-muted);
+}
+
+.vtc-config .vtc-audience-tag {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  padding: 0 0.4rem;
+  color: var(--vtc-ochre);
+  border: 1px solid rgba(201, 185, 143, 0.5);
+  border-radius: 3px;
+}

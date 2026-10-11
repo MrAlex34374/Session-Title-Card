@@ -1,0 +1,149 @@
+{
+  "VTC": {
+    "Control": {
+      "Title": "Title Card"
+    },
+    "Macro": {
+      "Name": "Title Card"
+    },
+    "Notify": {
+      "GMOnly": "Only the GM can display a title card."
+    },
+    "Warn": {
+      "Empty": "The title card is empty: enter at least one text.",
+      "InvalidImage": "Background image ignored: invalid path or format.",
+      "InvalidSound": "Intro sound ignored: invalid path or format.",
+      "ImageLoad": "Could not load the title card background image.",
+      "SoundLoad": "Could not play the title card intro sound.",
+      "CounterDisabled": "The text contains {{n}} but the session counter is disabled: the token will be shown as is.",
+      "NothingToPreload": "No valid file to preload."
+    },
+    "Overlay": {
+      "Close": "Close for everyone (Esc)"
+    },
+    "Settings": {
+      "FontFamily": {
+        "Name": "Font",
+        "Hint": "Font used for every text of the card. The list comes from the fonts registered in Foundry."
+      },
+      "TitleColor": {
+        "Name": "Title color",
+        "Hint": "Cream by default (#f2e6c9)."
+      },
+      "SubtitleColor": {
+        "Name": "Subtitle color",
+        "Hint": "Ochre by default (#c9b98f). Also used for the ambience text."
+      },
+      "TitleSize": {
+        "Name": "Title size (px)",
+        "Hint": "Maximum size. It is reduced automatically on small screens."
+      },
+      "Shadow": {
+        "Name": "Drop shadow",
+        "Hint": "Shadow applied to the card texts.",
+        "None": "None",
+        "Soft": "Soft",
+        "Strong": "Strong"
+      },
+      "DefaultFadeIn": {
+        "Name": "Default fade in (ms)",
+        "Hint": "Used when a macro does not specify a duration."
+      },
+      "DefaultHold": {
+        "Name": "Default display time (ms)",
+        "Hint": "Time during which every text stays fully visible."
+      },
+      "DefaultFadeOut": {
+        "Name": "Default fade out (ms)",
+        "Hint": "Duration of the fade out."
+      },
+      "DefaultOpacity": {
+        "Name": "Default black background opacity",
+        "Hint": "From 0 (transparent) to 1 (fully black)."
+      },
+      "MuteSound": {
+        "Name": "Disable intro sound",
+        "Hint": "If checked, you will never hear title card sounds (this setting is specific to your browser)."
+      },
+      "MasterVolume": {
+        "Name": "Intro sound volume",
+        "Hint": "Multiplies the volume chosen by the GM (this setting is specific to your browser)."
+      }
+    },
+    "Config": {
+      "Title": "Session Title Card",
+      "Section": {
+        "Text": "Texts",
+        "Media": "Image and sound",
+        "Timing": "Timing and background",
+        "Counter": "Session counter",
+        "Presets": "Presets",
+        "Audience": "Audience"
+      },
+      "Field": {
+        "Title": "Title",
+        "TitleHint": "Use {{n}} to insert the session number.",
+        "TitlePlaceholder": "Session {{n}}",
+        "Subtitle": "Subtitle (optional)",
+        "Tagline": "Ambience text (optional)",
+        "TaglineHint": "Small italic text, for example a date or a place.",
+        "Image": "Background image (optional)",
+        "Sound": "Intro sound (optional)",
+        "Volume": "Sound volume",
+        "FadeIn": "Fade in (ms)",
+        "Hold": "Display time (ms)",
+        "FadeOut": "Fade out (ms)",
+        "Opacity": "Black background opacity",
+        "UseCounter": "Enable the counter",
+        "UseCounterHint": "Replaces {{n}} and increments the counter each time the card is shown to everyone.",
+        "Number": "Number to display",
+        "Mode": "Display type",
+        "ModeHint": "The banner appears at the bottom of the screen, without a full screen black veil, without blocking clicks and without a background image. Escape does not close it: use the button at the bottom right.",
+        "Preload": "Preloading",
+        "PreloadHint": "Loads the image and sound in the players' browsers so the card shows without delay."
+      },
+      "Button": {
+        "ShowAll": "Show to everyone",
+        "Preview": "Preview (me only)",
+        "CloseAll": "Close the card",
+        "Preload": "Preload for players"
+      },
+      "Presets": {
+        "Select": "Saved preset",
+        "None": "None",
+        "Load": "Load",
+        "Save": "Save",
+        "Delete": "Delete",
+        "SaveTitle": "Save a preset",
+        "SaveLabel": "Preset name",
+        "Overwrite": "A preset named \"{name}\" already exists. Replace it?",
+        "OverwriteTitle": "Replace preset",
+        "DeleteConfirm": "Delete the preset \"{name}\"?",
+        "DeleteTitle": "Delete preset",
+        "Saved": "Preset \"{name}\" saved.",
+        "Loaded": "Preset \"{name}\" loaded.",
+        "Deleted": "Preset \"{name}\" deleted.",
+        "NoSelection": "Choose a preset first.",
+        "NameRequired": "The preset name is required.",
+        "Full": "Maximum number of presets reached."
+      },
+      "Mode": {
+        "Full": "Full screen card",
+        "Banner": "Banner (bottom of the screen)"
+      },
+      "Preload": {
+        "Sent": "Preload requested from the selected players."
+      },
+      "Audience": {
+        "Hint": "Choose who receives the card and the preload. By default every connected user. The GM always sees their own card.",
+        "All": "Everyone",
+        "None": "No one",
+        "Online": "Online",
+        "Offline": "Offline",
+        "GM": "GM",
+        "Empty": "No other user in this world.",
+        "SentTo": "Card sent to the selected users ({count})."
+      }
+    }
+  }
+}

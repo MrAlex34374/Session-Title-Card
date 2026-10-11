@@ -1,0 +1,149 @@
+{
+  "VTC": {
+    "Control": {
+      "Title": "Carte de titre"
+    },
+    "Macro": {
+      "Name": "Carte de titre"
+    },
+    "Notify": {
+      "GMOnly": "Seul le MJ peut afficher une carte de titre."
+    },
+    "Warn": {
+      "Empty": "La carte de titre est vide : renseignez au moins un texte.",
+      "InvalidImage": "Image de fond ignorée : chemin ou format invalide.",
+      "InvalidSound": "Son d'intro ignoré : chemin ou format invalide.",
+      "ImageLoad": "Impossible de charger l'image de fond de la carte de titre.",
+      "SoundLoad": "Impossible de lire le son d'intro de la carte de titre.",
+      "CounterDisabled": "Le texte contient {{n}} mais le compteur de session est désactivé : le motif sera affiché tel quel.",
+      "NothingToPreload": "Aucun fichier valide à précharger."
+    },
+    "Overlay": {
+      "Close": "Fermer pour tous (Échap)"
+    },
+    "Settings": {
+      "FontFamily": {
+        "Name": "Police",
+        "Hint": "Police utilisée pour tous les textes de la carte. Liste issue des polices enregistrées dans Foundry."
+      },
+      "TitleColor": {
+        "Name": "Couleur du titre",
+        "Hint": "Crème par défaut (#f2e6c9)."
+      },
+      "SubtitleColor": {
+        "Name": "Couleur du sous-titre",
+        "Hint": "Ocre par défaut (#c9b98f). Sert aussi au texte d'ambiance."
+      },
+      "TitleSize": {
+        "Name": "Taille du titre (px)",
+        "Hint": "Taille maximale. Elle est réduite automatiquement sur les petits écrans."
+      },
+      "Shadow": {
+        "Name": "Ombre portée",
+        "Hint": "Ombre appliquée aux textes de la carte.",
+        "None": "Aucune",
+        "Soft": "Douce",
+        "Strong": "Marquée"
+      },
+      "DefaultFadeIn": {
+        "Name": "Fondu d'entrée par défaut (ms)",
+        "Hint": "Utilisé quand une macro n'indique pas de durée."
+      },
+      "DefaultHold": {
+        "Name": "Durée d'affichage par défaut (ms)",
+        "Hint": "Durée pendant laquelle tous les textes restent pleinement visibles."
+      },
+      "DefaultFadeOut": {
+        "Name": "Fondu de sortie par défaut (ms)",
+        "Hint": "Durée du fondu de sortie."
+      },
+      "DefaultOpacity": {
+        "Name": "Opacité du fond noir par défaut",
+        "Hint": "De 0 (transparent) à 1 (noir complet)."
+      },
+      "MuteSound": {
+        "Name": "Désactiver le son d'intro",
+        "Hint": "Si coché, vous n'entendrez jamais le son des cartes de titre (réglage propre à votre navigateur)."
+      },
+      "MasterVolume": {
+        "Name": "Volume du son d'intro",
+        "Hint": "Multiplie le volume choisi par le MJ (réglage propre à votre navigateur)."
+      }
+    },
+    "Config": {
+      "Title": "Carte de titre de session",
+      "Section": {
+        "Text": "Textes",
+        "Media": "Image et son",
+        "Timing": "Durées et fond",
+        "Counter": "Compteur de session",
+        "Presets": "Presets",
+        "Audience": "Diffusion"
+      },
+      "Field": {
+        "Title": "Titre",
+        "TitleHint": "Utilisez {{n}} pour insérer le numéro de session.",
+        "TitlePlaceholder": "Session {{n}}",
+        "Subtitle": "Sous-titre (optionnel)",
+        "Tagline": "Texte d'ambiance (optionnel)",
+        "TaglineHint": "Petit texte en italique, par exemple une date ou un lieu.",
+        "Image": "Image de fond (optionnelle)",
+        "Sound": "Son d'intro (optionnel)",
+        "Volume": "Volume du son",
+        "FadeIn": "Fondu d'entrée (ms)",
+        "Hold": "Durée d'affichage (ms)",
+        "FadeOut": "Fondu de sortie (ms)",
+        "Opacity": "Opacité du fond noir",
+        "UseCounter": "Activer le compteur",
+        "UseCounterHint": "Remplace {{n}} et incrémente le compteur à chaque affichage pour tous.",
+        "Number": "Numéro à afficher",
+        "Mode": "Type d'affichage",
+        "ModeHint": "Le bandeau s'affiche en bas de l'écran, sans fond noir plein écran, sans bloquer les clics et sans image de fond. Échap ne le ferme pas : utilisez le bouton en bas à droite.",
+        "Preload": "Préchargement",
+        "PreloadHint": "Charge l'image et le son dans le navigateur des joueurs pour que la carte s'affiche sans retard."
+      },
+      "Button": {
+        "ShowAll": "Afficher à tous",
+        "Preview": "Aperçu (moi seul)",
+        "CloseAll": "Fermer la carte",
+        "Preload": "Précharger chez les joueurs"
+      },
+      "Presets": {
+        "Select": "Preset enregistré",
+        "None": "Aucun",
+        "Load": "Charger",
+        "Save": "Enregistrer",
+        "Delete": "Supprimer",
+        "SaveTitle": "Enregistrer un preset",
+        "SaveLabel": "Nom du preset",
+        "Overwrite": "Un preset nommé \"{name}\" existe déjà. Le remplacer ?",
+        "OverwriteTitle": "Remplacer le preset",
+        "DeleteConfirm": "Supprimer le preset \"{name}\" ?",
+        "DeleteTitle": "Supprimer le preset",
+        "Saved": "Preset \"{name}\" enregistré.",
+        "Loaded": "Preset \"{name}\" chargé.",
+        "Deleted": "Preset \"{name}\" supprimé.",
+        "NoSelection": "Choisissez d'abord un preset.",
+        "NameRequired": "Le nom du preset est obligatoire.",
+        "Full": "Nombre maximal de presets atteint."
+      },
+      "Mode": {
+        "Full": "Carte plein écran",
+        "Banner": "Bandeau (bas de l'écran)"
+      },
+      "Preload": {
+        "Sent": "Préchargement demandé aux joueurs sélectionnés."
+      },
+      "Audience": {
+        "Hint": "Choisissez qui reçoit la carte et le préchargement. Par défaut, tous les utilisateurs connectés. Le MJ voit toujours sa propre carte.",
+        "All": "Tous",
+        "None": "Aucun",
+        "Online": "Connecté",
+        "Offline": "Hors ligne",
+        "GM": "MJ",
+        "Empty": "Aucun autre utilisateur dans ce monde.",
+        "SentTo": "Carte envoyée aux utilisateurs sélectionnés ({count})."
+      }
+    }
+  }
+}
