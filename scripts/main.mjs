@@ -168,15 +168,15 @@ const api = Object.freeze({
 
 /**
  * The server relays module sockets and appends the id of the user who emitted them as a second argument
- * to the listener. That id comes from the server session and cannot be forged, so it is preferred. The id
- * written in the payload is only a fallback for versions that do not provide it.
+ * to the listener (Foundry 14: emit(event, data, this.user.id)). That id comes from the server session and
+ * cannot be forged. It is the only identity trusted here: the userId written in the payload is ignored.
  * Whatever the sender, card content is sanitized and only ever inserted with textContent.
  */
 function onSocketMessage(payload, serverSenderId) {
   if (!payload || typeof payload !== "object") return;
-  const sender = game.users.get(typeof serverSenderId === "string" ? serverSenderId : payload.userId);
+  const sender = typeof serverSenderId === "string" ? game.users.get(serverSenderId) : null;
   if (!sender?.isGM || !sender.active) {
-    log("message ignored, sender is not a connected GM", {action: payload.action, serverSenderId, claimed: payload.userId});
+    log("message ignored, sender is not a connected GM", {action: payload.action, authenticated: typeof serverSenderId === "string"});
     return;
   }
   log("message received", {action: payload.action, from: sender.name});

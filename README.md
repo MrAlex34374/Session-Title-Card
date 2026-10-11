@@ -210,7 +210,7 @@ game.modules.get("vyrmhal-title-card").api.close();
 
 ## Sécurité
 
-- Le serveur Foundry relaie les sockets de module et ajoute aux récepteurs l'identifiant de l'utilisateur qui a émis le message, d'après sa session. Chaque client utilise cet identifiant, qui ne peut pas être falsifié, et ignore tout message dont l'émetteur n'est pas un MJ connecté. Cette information a été vérifiée dans le code de la version 14. Si une version plus ancienne ne la fournit pas, le module se rabat sur l'identifiant écrit dans le message, qui pourrait alors être usurpé.
+- Le serveur Foundry relaie les sockets de module et ajoute aux récepteurs l'identifiant de l'utilisateur qui a émis le message, d'après sa session. Chaque client utilise cet identifiant, qui ne peut pas être falsifié, et ignore tout message dont l'émetteur n'est pas un MJ connecté. Cette information a été vérifiée dans le code de la version 14. L'identifiant écrit dans le contenu du message est ignoré : si le serveur ne fournit pas l'émetteur, le message est rejeté.
 - Dans tous les cas, le contenu reçu est assaini : textes tronqués et insérés avec `textContent` (jamais `innerHTML`), nombres bornés, chemins limités aux fichiers locaux d'image et d'audio (pas d'URL externe, pas de `..`). Les demandes de préchargement suivent les mêmes règles.
 - La restriction des destinataires est appliquée par le serveur : les utilisateurs non ciblés ne reçoivent pas le message.
 - Les chemins invalides sont ignorés avec une alerte discrète au MJ, sans casser l'affichage de la carte.
