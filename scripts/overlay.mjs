@@ -69,7 +69,7 @@ const isImagePath = path => hasExtension(path, CONST.IMAGE_FILE_EXTENSIONS);
 const isAudioPath = path => foundry.audio.AudioHelper.hasAudioExtension(path);
 
 /** Percent-encode a validated relative path so it is safe in a URL and inside a CSS url("...") token. */
-function toUrl(path) {
+export function toUrl(path) {
   return encodeURI(safeDecode(path))
     .replace(/[#?()']/g, char => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
 }
@@ -231,8 +231,9 @@ class TitleCardOverlay {
     const banner = card.mode === "banner";
     if (reduced) root.classList.add("vtc-reduced");
     if (banner) root.classList.add("vtc-banner");
-    root.setAttribute("role", "status");
-    root.setAttribute("aria-live", "polite");
+    // No aria-live on the overlay itself: the announcement goes through a dedicated hidden region (below).
+    root.setAttribute("role", "group");
+    root.setAttribute("aria-label", card.title || card.subtitle || card.tagline);
 
     // Fonts come from the local world settings and are only used if Foundry knows them.
     const font = Object.hasOwn(CONFIG.fontDefinitions ?? {}, style.fontFamily) ? style.fontFamily : DEFAULT_FONT;
@@ -285,8 +286,16 @@ class TitleCardOverlay {
     addText("vtc-tagline", card.tagline, -1);
     root.append(content);
 
+    // Dedicated live region, filled after insertion so screen readers announce the card once.
+    const region = createElement("div", "vtc-sr");
+    region.setAttribute("role", "status");
+    region.setAttribute("aria-live", "polite");
+    region.setAttribute("aria-atomic", "true");
+    root.append(region);
+    const announcement = [card.title, card.subtitle, card.tagline].filter(Boolean).join(". ");
+
     if (game.user.isGM) {
-      const button = createElement("button", "vtc-close", t("VTC.Overlay.Close"));
+      const button = createElement("button", "vtc-close", t(banner ? "VTC.Overlay.CloseBanner" : "VTC.Overlay.Close"));
       button.type = "button";
       button.addEventListener("click", event => {
         event.preventDefault();
@@ -295,16 +304,29 @@ class TitleCardOverlay {
       });
       root.append(button);
 
-      // A banner does not block the game, so Escape keeps its normal meaning there: only the button closes it.
-      // For full cards, capture on window so Foundry's own Escape handling does not also fire.
+      // Escape never fires while typing in a field, with a modifier, or when another handler already took it.
+      const isEscape = event => event.key === "Escape" && !event.defaultPrevented && !event.isComposing
+        && !event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey
+        && !event.target?.closest?.("input, textarea, select, [contenteditable]");
       if (!banner) {
+        // Full card: it covers the game, so Escape closes it. Capture on window so Foundry's own Escape handling
+        // (closing windows, opening the menu) does not also fire.
         this.#keyHandler = event => {
-          if (event.key !== "Escape") return;
+          if (!isEscape(event)) return;
           event.preventDefault();
           event.stopImmediatePropagation();
           if (!event.repeat) this.#onUserClose();
         };
         window.addEventListener("keydown", this.#keyHandler, true);
+      } else {
+        // A banner does not block the game, so Escape keeps its normal meaning everywhere, except when the
+        // keyboard focus is on the banner itself (its close button).
+        root.addEventListener("keydown", event => {
+          if (!isEscape(event)) return;
+          event.preventDefault();
+          event.stopPropagation();
+          if (!event.repeat) this.#onUserClose();
+        });
       }
     }
 
@@ -318,6 +340,7 @@ class TitleCardOverlay {
     const enterTime = fadeIn + step * index;
     this.#later(() => this.dismiss(), enterTime + card.hold);
 
+    this.#later(() => { region.textContent = announcement; }, 150);
     this.#playSound();
   }
 

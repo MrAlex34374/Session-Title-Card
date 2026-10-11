@@ -19,7 +19,8 @@
       "NothingToPreload": "No valid file to preload."
     },
     "Overlay": {
-      "Close": "Close for everyone (Esc)"
+      "Close": "Close for everyone (Esc)",
+      "CloseBanner": "Close the banner (Esc when this button has focus)"
     },
     "Settings": {
       "FontFamily": {
@@ -90,15 +91,15 @@
         "Image": "Background image (optional)",
         "Sound": "Intro sound (optional)",
         "Volume": "Sound volume",
-        "FadeIn": "Fade in (ms)",
-        "Hold": "Display time (ms)",
-        "FadeOut": "Fade out (ms)",
+        "FadeIn": "Fade in (s)",
+        "Hold": "Display time (s)",
+        "FadeOut": "Fade out (s)",
         "Opacity": "Black background opacity",
-        "UseCounter": "Enable the counter",
+        "UseCounter": "Use the session number",
         "UseCounterHint": "Replaces {{n}} and increments the counter each time the card is shown to everyone.",
-        "Number": "Number to display",
+        "Number": "Session number",
         "Mode": "Display type",
-        "ModeHint": "The banner appears at the bottom of the screen, without a full screen black veil, without blocking clicks and without a background image. Escape does not close it: use the button at the bottom right.",
+        "ModeHint": "The banner appears at the bottom of the screen, with no full-screen black veil, without blocking clicks and without a background image. Esc only closes it while its close button (bottom right) has focus: otherwise, click that button.",
         "Preload": "Preloading",
         "PreloadHint": "Loads the image and sound in the players' browsers so the card shows without delay."
       },
@@ -143,6 +144,27 @@
         "GM": "GM",
         "Empty": "No other user in this world.",
         "SentTo": "Card sent to the selected users ({count})."
+      },
+      "Quick": {
+        "Heading": "Quick launch",
+        "Advanced": "Advanced options",
+        "Simple": "Hide advanced options"
+      },
+      "Duration": {
+        "Label": "Card length",
+        "Short": "Short",
+        "Normal": "Normal",
+        "Long": "Long",
+        "Custom": "Custom durations (set in the advanced options)."
+      },
+      "Preview": {
+        "Label": "Live preview",
+        "Empty": "Your title here"
+      },
+      "Contrast": {
+        "Ok": "Contrast {ratio}:1 · OK ≥ 4.5:1",
+        "Low": "Contrast {ratio}:1 · Low (< 4.5:1)",
+        "Image": "(background image not included)"
       }
     }
   }

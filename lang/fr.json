@@ -19,7 +19,8 @@
       "NothingToPreload": "Aucun fichier valide à précharger."
     },
     "Overlay": {
-      "Close": "Fermer pour tous (Échap)"
+      "Close": "Fermer pour tous (Échap)",
+      "CloseBanner": "Fermer le bandeau (Échap quand ce bouton a le focus)"
     },
     "Settings": {
       "FontFamily": {
@@ -90,15 +91,15 @@
         "Image": "Image de fond (optionnelle)",
         "Sound": "Son d'intro (optionnel)",
         "Volume": "Volume du son",
-        "FadeIn": "Fondu d'entrée (ms)",
-        "Hold": "Durée d'affichage (ms)",
-        "FadeOut": "Fondu de sortie (ms)",
+        "FadeIn": "Fondu d'entrée (s)",
+        "Hold": "Durée d'affichage (s)",
+        "FadeOut": "Fondu de sortie (s)",
         "Opacity": "Opacité du fond noir",
-        "UseCounter": "Activer le compteur",
+        "UseCounter": "Utiliser le n° de session",
         "UseCounterHint": "Remplace {{n}} et incrémente le compteur à chaque affichage pour tous.",
-        "Number": "Numéro à afficher",
+        "Number": "N° de session",
         "Mode": "Type d'affichage",
-        "ModeHint": "Le bandeau s'affiche en bas de l'écran, sans fond noir plein écran, sans bloquer les clics et sans image de fond. Échap ne le ferme pas : utilisez le bouton en bas à droite.",
+        "ModeHint": "Le bandeau s'affiche en bas de l'écran, sans fond noir plein écran, sans bloquer les clics et sans image de fond. Échap ne le ferme que lorsque son bouton de fermeture (en bas à droite) a le focus : sinon, cliquez sur ce bouton.",
         "Preload": "Préchargement",
         "PreloadHint": "Charge l'image et le son dans le navigateur des joueurs pour que la carte s'affiche sans retard."
       },
@@ -143,6 +144,27 @@
         "GM": "MJ",
         "Empty": "Aucun autre utilisateur dans ce monde.",
         "SentTo": "Carte envoyée aux utilisateurs sélectionnés ({count})."
+      },
+      "Quick": {
+        "Heading": "Lancer vite",
+        "Advanced": "Options avancées",
+        "Simple": "Masquer les options avancées"
+      },
+      "Duration": {
+        "Label": "Durée de la carte",
+        "Short": "Court",
+        "Normal": "Normal",
+        "Long": "Long",
+        "Custom": "Durées personnalisées (réglées dans les options avancées)."
+      },
+      "Preview": {
+        "Label": "Aperçu en direct",
+        "Empty": "Votre titre ici"
+      },
+      "Contrast": {
+        "Ok": "Contraste {ratio}:1 · OK ≥ 4,5:1",
+        "Low": "Contraste {ratio}:1 · Faible (< 4,5:1)",
+        "Image": "(hors image de fond)"
       }
     }
   }
