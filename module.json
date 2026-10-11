@@ -2,7 +2,7 @@
   "id": "vyrmhal-title-card",
   "title": "Session Title Card",
   "description": "<p>Affiche une carte de titre cinématique au centre de l'écran de tous les joueurs, déclenchée par le MJ avant le début d'une session.</p><p lang=\"en\">Displays a cinematic title card on every connected screen, triggered by the GM before a session starts.</p>",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "authors": [
     {
       "name": "MrAlex34374"
@@ -37,5 +37,5 @@
   "changelog": "https://github.com/MrAlex34374/Session-Title-Card/blob/main/CHANGELOG.md",
   "license": "https://github.com/MrAlex34374/Session-Title-Card/blob/main/LICENSE",
   "manifest": "https://github.com/MrAlex34374/Session-Title-Card/releases/latest/download/module.json",
-  "download": "https://github.com/MrAlex34374/Session-Title-Card/releases/download/v1.2.1/module.zip"
+  "download": "https://github.com/MrAlex34374/Session-Title-Card/releases/download/v1.2.2/module.zip"
 }

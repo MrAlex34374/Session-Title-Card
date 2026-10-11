@@ -2,6 +2,11 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
+## [1.2.2] - 2026-10-12
+
+### Modifié
+- Release régénérée : l'archive de 1.2.1 contenait encore des chemins propres au serveur de développement.
+
 ## [1.2.1] - 2026-10-12
 
 ### Ajouté
