@@ -100,6 +100,26 @@ Si le texte contient `{{n}}` alors que le compteur est désactivé, le motif est
 
 Un preset enregistre le titre, le sous-titre, le texte d'ambiance, l'image, le son, le volume, les durées et l'opacité. Les presets sont stockés dans un réglage monde (donc partagés par tous les MJ du monde, invisibles pour les joueurs). Enregistrer sous un nom déjà utilisé demande confirmation avant de remplacer.
 
+## Carte de titre automatique par scène
+
+Dans la configuration d'une scène (onglet de base), le bloc « Carte de titre automatique » décrit une carte : titre (le nom de la scène par défaut), sous-titre, texte d'ambiance, type d'affichage (bandeau par défaut ou plein écran), image (plein écran seulement) et son. Elle est stockée dans le flag `flags.vyrmhal-title-card.autoCard` de la scène. Les scènes qui en ont une portent une icône de clap dans le répertoire des scènes.
+
+- Chaque joueur voit la carte à son arrivée sur la scène : activation par le MJ, changement de scène ou téléportation de token. Un joueur resté sur une autre scène n'est pas concerné.
+- Elle apparaît quand le canevas du joueur charge la scène. Le déclencheur « token » suppose donc que la téléportation change la scène vue par le joueur : à vérifier avec votre module de téléportation.
+- Le MJ la voit seulement quand la scène est active et que son réglage client « Cartes de titre automatiques côté MJ » est coché (coché par défaut).
+- Elle n'est pas rejouée au rechargement de la page ni quand la même scène est redessinée. Elle est rejouée si l'on revient sur la scène après être passé par une autre, sauf avec l'option « Une seule fois », qui vaut jusqu'au prochain numéro de session. Le numéro n'avance que si vous lancez une carte avec le compteur de session activé ; sans cela, « une seule fois » vaut pour toujours.
+- Une carte envoyée à la main par le MJ reste affichée : la carte automatique ne la remplace pas. Une carte automatique, elle, est remplacée par la suivante.
+- Chaque utilisateur peut couper ces cartes chez lui avec le réglage client « Afficher les cartes de titre de scène ».
+- Les joueurs peuvent passer la carte (bouton « Passer », Échap ou clic en plein écran) après 1,5 s. Les durées sont plafonnées : affichage 15 s, fondus 3 s.
+- La durée se choisit par scène (Court, Normal, Long), comme dans la fenêtre du MJ : elle multiplie par 0,5, 1 ou 2 les durées par défaut du type d'affichage. L'opacité et le volume viennent des valeurs par défaut du module. Un plein écran apparaît en fondu depuis le noir.
+- `{{n}}` est remplacé par le dernier numéro de session enregistré, sans l'incrémenter. Tant que le compteur vaut 0, le motif est retiré. L'aperçu applique la même règle.
+- Rien de secret dans ces champs : le flag de scène est lisible par les joueurs (console du navigateur).
+- Interrupteur général : réglage monde « Cartes de titre automatiques par scène », qui sert aussi de coupe-circuit.
+
+## Cartes de combat
+
+Un bandeau s'affiche chez tous les joueurs au début et à la fin de chaque combat (hooks `updateCombat` et `deleteCombat`, qui partent sur tous les clients, contrairement à `combatStart` que seul le MJ reçoit ; seulement pour les combats de la scène vue ; la fin ne s'annonce que si le début l'a été). Un joueur qui se connecte en plein combat ne voit pas de bandeau de début. La phrase est tirée au hasard dans une liste que vous modifiez dans les réglages (séparateur `|`). C'est désactivé par défaut : activez « Cartes de combat automatiques » (réglage monde) après avoir prévenu vos joueurs. Chacun, MJ compris, peut les couper chez lui avec « Afficher les cartes de combat ». Une carte envoyée à la main reste prioritaire.
+
 ## Réglages
 
 Réglages monde (modifiables par le MJ dans `Paramètres > Configurer les paramètres > Session Title Card`) :

@@ -6,10 +6,13 @@
  * is a GM, sanitizes the card again and shows it.
  */
 import {MODULE_ID, SOCKET, t, registerSettings, refreshChoices} from "./settings.mjs";
-import {sanitizeCard, cleanMedia, preloadMedia, showOverlay, closeOverlay, isOverlayActive} from "./overlay.mjs";
+import {sanitizeCard, cleanMedia, preloadMedia, showOverlay, closeOverlay, isOverlayActive, isManualOverlayActive} from "./overlay.mjs";
 import {TitleCardConfig} from "./config-app.mjs";
+import {registerCombatCards} from "./combat-cards.mjs";
+import {AUTO_FLAG, resolveAutoCard, onRenderSceneConfig, onRenderSceneDirectory} from "./scene-config.mjs";
 
 const COUNTER_PATTERN = /\{\{\s*n\s*\}\}/g;
+
 const TOOL_NAME = "vyrmhalTitleCard";
 const MACRO_FLAG = "configMacro";
 
@@ -43,7 +46,8 @@ function prepareCard(options) {
     subtitle: resolve(source.subtitle),
     tagline: resolve(source.tagline)
   });
-  for (const key of warnings) ui.notifications.warn(key, {localize: true});
+  // Players cannot fix a card, so only the GM is told about problems (automatic cards run on every client).
+  if (game.user.isGM) for (const key of warnings) ui.notifications.warn(key, {localize: true});
   if (!card) return null;
   return {card, counter, save: increment && counter !== null};
 }
@@ -238,6 +242,126 @@ Hooks.once("ready", () => {
   game.socket.on(SOCKET, onSocketMessage);
   if (game.user.isGM) ensureMacro();
 });
+
+/* -------------------------------------------- */
+/*  Automatic card on scene arrival             */
+/* -------------------------------------------- */
+
+const LAST_SCENE_KEY = `${MODULE_ID}.lastScene`;
+const SEEN_PREFIX = `${MODULE_ID}.seen.`;
+const AUTO_LIMITS = Object.freeze({hold: 15000, fade: 3000});
+
+// Browser storage can be unavailable (private window, blocked site data): the same values are kept in memory.
+const memory = {lastScene: null, seen: new Map()};
+
+function getLastScene() {
+  if (memory.lastScene) return memory.lastScene;
+  try {
+    return sessionStorage.getItem(LAST_SCENE_KEY);
+  } catch (err) {
+    return null;
+  }
+}
+
+function setLastScene(id) {
+  memory.lastScene = id;
+  try {
+    sessionStorage.setItem(LAST_SCENE_KEY, id);
+  } catch (err) {
+    // Memory fallback only
+  }
+}
+
+/** "Only once" is scoped to the session number: the list starts over when the session counter goes up. */
+const seenKey = () => `${SEEN_PREFIX}${game.world.id}.${game.settings.get(MODULE_ID, "sessionCounter")}`;
+
+function loadSeen(key) {
+  const set = memory.seen.get(key) ?? new Set();
+  try {
+    for (const id of JSON.parse(localStorage.getItem(key) ?? "[]")) set.add(id);
+  } catch (err) {
+    // Unreadable storage: keep what is in memory
+  }
+  memory.seen.set(key, set);
+  return set;
+}
+
+const hasSeenScene = id => loadSeen(seenKey()).has(id);
+
+function markSceneSeen(id) {
+  const key = seenKey();
+  const set = loadSeen(key);
+  set.add(id);
+  try {
+    localStorage.setItem(key, JSON.stringify([...set]));
+    // Lists of earlier sessions are no longer needed.
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const other = localStorage.key(i);
+      if (other?.startsWith(SEEN_PREFIX) && other !== key) localStorage.removeItem(other);
+    }
+  } catch (err) {
+    // Memory fallback only
+  }
+}
+
+/** Show a prepared automatic card (scene or combat). Players can skip it, and it is capped in time. */
+function displayAutoCard(card) {
+  // Automatic cards never block a player for long, whatever the flag contains (imported scenes, hand edits).
+  card.hold = Math.min(card.hold, AUTO_LIMITS.hold);
+  card.fadeIn = Math.min(card.fadeIn, AUTO_LIMITS.fade);
+  card.fadeOut = Math.min(card.fadeOut, AUTO_LIMITS.fade);
+  showOverlay(card, {
+    onUserClose: game.user.isGM ? () => closeOverlay() : undefined,
+    skippable: !game.user.isGM,
+    origin: "auto",
+    // A full card fades in from black, so the scene is never seen for a moment before the veil.
+    startOpacity: card.mode === "full" ? 1 : 0
+  });
+}
+
+/** Combat cards: a card the GM sent by hand takes priority. */
+function showCombatCard(options) {
+  if (isManualOverlayActive()) return;
+  const prepared = prepareCard(options);
+  if (prepared) displayAutoCard(prepared.card);
+}
+
+/**
+ * Runs on every client when its canvas finishes loading a scene: scene activation, a player switching scene
+ * and a token teleport all end here. The card is built from the scene flag and shown locally, no socket.
+ * It is not replayed on a page reload or a canvas redraw of the same scene. With the scene option `once`,
+ * it is shown only once per session number.
+ */
+function showSceneCard(scene) {
+  if (!scene || !game.settings.get(MODULE_ID, "autoCardEnabled")) return;
+  if (!game.settings.get(MODULE_ID, "autoCardClient")) return;
+  if (getLastScene() === scene.id) return;
+
+  const data = scene.getFlag(MODULE_ID, AUTO_FLAG);
+  if (!data?.enabled) {
+    setLastScene(scene.id);
+    return;
+  }
+  // The GM browsing scenes while preparing should not trigger cards: only when the scene is the active one.
+  // Not remembered, so the card still shows when the GM activates the scene they are already on.
+  if (game.user.isGM && !(scene.active && game.settings.get(MODULE_ID, "autoCardGM"))) return;
+
+  setLastScene(scene.id);
+  if (data.once === true && hasSeenScene(scene.id)) return;
+  // A card the GM sent by hand takes priority over the automatic one.
+  if (isManualOverlayActive()) return;
+
+  const prepared = prepareCard(resolveAutoCard(data, scene.name));
+  if (!prepared) return;
+
+  if (data.once === true) markSceneSeen(scene.id);
+  displayAutoCard(prepared.card);
+}
+
+Hooks.on("canvasReady", canvas => showSceneCard(canvas.scene));
+Hooks.on("renderSceneConfig", onRenderSceneConfig);
+Hooks.on("renderSceneDirectory", onRenderSceneDirectory);
+registerCombatCards(showCombatCard);
 
 Hooks.on("getSceneControlButtons", controls => {
   if (!game.user.isGM) return;

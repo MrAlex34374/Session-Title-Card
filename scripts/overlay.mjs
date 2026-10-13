@@ -6,6 +6,7 @@ import {MODULE_ID, DEFAULT_FONT, LIMITS, t, getDefaults, getStyleSettings} from 
 
 const REDUCED_MOTION_CAP = 400;   // Max fade duration (ms) when the client prefers reduced motion
 const MANUAL_CLOSE_MAX = 800;     // Max fade out (ms) when the GM closes the card by hand
+const SKIP_DELAY = 1500;          // Delay (ms) before a player can skip an automatic card
 const REMOVE_MARGIN = 120;        // Extra delay (ms) after the fade out before removing the DOM
 const MAX_STEP = 600;             // Max stagger (ms) between title, subtitle and tagline
 
@@ -178,16 +179,22 @@ class TitleCardOverlay {
    * @param {object} options
    * @param {number} options.startOpacity     Opacity the black veil starts from (non-zero when replacing a card)
    * @param {Function} options.onUserClose    Called when the GM asks to close the card
+   * @param {boolean} options.skippable       Local only: players may skip the card once SKIP_DELAY has passed
+   * @param {"auto"|"manual"} options.origin  Automatic cards (scene, combat) never replace a manual one
    */
-  constructor(card, {startOpacity = 0, onUserClose} = {}) {
+  constructor(card, {startOpacity = 0, onUserClose, skippable = false, origin = "manual"} = {}) {
     this.#card = card;
     this.#startOpacity = startOpacity;
+    this.#skippable = skippable === true;
+    this.#origin = origin === "auto" ? "auto" : "manual";
     this.#onUserClose = onUserClose ?? (() => this.dismiss({fast: true}));
   }
 
   #card;
   #startOpacity;
   #onUserClose;
+  #skippable;
+  #origin;
   #root = null;
   #backdrop = null;
   #probe = null;
@@ -200,6 +207,10 @@ class TitleCardOverlay {
 
   get mode() {
     return this.#card.mode;
+  }
+
+  get origin() {
+    return this.#origin;
   }
 
   /** Current opacity of the black veil, read from the live style. */
@@ -294,13 +305,14 @@ class TitleCardOverlay {
     root.append(region);
     const announcement = [card.title, card.subtitle, card.tagline].filter(Boolean).join(". ");
 
-    if (game.user.isGM) {
-      const button = createElement("button", "vtc-close", t(banner ? "VTC.Overlay.CloseBanner" : "VTC.Overlay.Close"));
+    // The GM can always close the card; a player can skip it only when the caller allows it, after a short delay.
+    const attachClose = (label, onClose, player = false) => {
+      const button = createElement("button", "vtc-close", label);
       button.type = "button";
       button.addEventListener("click", event => {
         event.preventDefault();
         event.stopPropagation();
-        this.#onUserClose();
+        onClose();
       });
       root.append(button);
 
@@ -315,7 +327,7 @@ class TitleCardOverlay {
           if (!isEscape(event)) return;
           event.preventDefault();
           event.stopImmediatePropagation();
-          if (!event.repeat) this.#onUserClose();
+          if (!event.repeat) onClose();
         };
         window.addEventListener("keydown", this.#keyHandler, true);
       } else {
@@ -325,9 +337,19 @@ class TitleCardOverlay {
           if (!isEscape(event)) return;
           event.preventDefault();
           event.stopPropagation();
-          if (!event.repeat) this.#onUserClose();
+          if (!event.repeat) onClose();
         });
       }
+      if (player) {
+        // The card covers the game: a click skips it, and the keyboard focus moves to the button.
+        if (!banner) root.addEventListener("click", () => onClose());
+        if (!banner) button.focus({preventScroll: true});
+      }
+    };
+    if (game.user.isGM) {
+      attachClose(t(banner ? "VTC.Overlay.CloseBanner" : "VTC.Overlay.Close"), this.#onUserClose);
+    } else if (this.#skippable) {
+      this.#later(() => attachClose(t("VTC.Overlay.Skip"), () => this.dismiss({fast: true}), true), SKIP_DELAY);
     }
 
     document.body.append(root);
@@ -451,16 +473,24 @@ let current = null;
  * @param {object} card
  * @param {object} [options]
  * @param {Function} [options.onUserClose]   Called when the GM closes the card (button or Escape)
+ * @param {boolean} [options.skippable]      Let players skip the card after a short delay (local cards only)
+ * @param {number} [options.startOpacity]    Opacity the veil starts from, 1 to fade in from black
+ * @param {"auto"|"manual"} [options.origin] Where the card comes from. Defaults to manual
  */
-export function showOverlay(card, {onUserClose} = {}) {
+export function showOverlay(card, {onUserClose, skippable = false, startOpacity: initialOpacity = 0, origin = "manual"} = {}) {
   // Keep the black veil continuous when replacing, so the game never flashes through.
-  let startOpacity = 0;
+  let startOpacity = initialOpacity;
   if (current) {
     if (current.mode === card.mode) startOpacity = current.backdropOpacity;
     current.destroy();
   }
-  current = new TitleCardOverlay(card, {startOpacity, onUserClose});
+  current = new TitleCardOverlay(card, {startOpacity, onUserClose, skippable, origin});
   current.start();
+}
+
+/** Whether a card the GM sent by hand (or a preview) is currently displayed on this client. */
+export function isManualOverlayActive() {
+  return current !== null && current.origin === "manual";
 }
 
 /** Whether a card is currently displayed on this client. */

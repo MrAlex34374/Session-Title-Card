@@ -20,7 +20,8 @@
     },
     "Overlay": {
       "Close": "Close for everyone (Esc)",
-      "CloseBanner": "Close the banner (Esc when this button has focus)"
+      "CloseBanner": "Close the banner (Esc when this button has focus)",
+      "Skip": "Skip (Esc)"
     },
     "Settings": {
       "FontFamily": {
@@ -69,6 +70,34 @@
       "MasterVolume": {
         "Name": "Intro sound volume",
         "Hint": "Multiplies the volume chosen by the GM (this setting is specific to your browser)."
+      },
+      "AutoCardEnabled": {
+        "Name": "Automatic per-scene title cards",
+        "Hint": "Master switch: shows the title card configured in a scene when someone arrives on it. When off, no automatic card is shown at all, GM included."
+      },
+      "AutoCardGM": {
+        "Name": "Automatic title cards for the GM",
+        "Hint": "Also show the card to the GM when they arrive on the active scene. Scenes that are not active never show a card to the GM (this setting is specific to this browser)."
+      },
+      "AutoCardClient": {
+        "Name": "Show scene title cards",
+        "Hint": "Uncheck to stop seeing the automatic title cards shown when you arrive on a scene. Applies to this browser only."
+      },
+      "CombatCardEnabled": {
+        "Name": "Automatic combat cards",
+        "Hint": "Shows a banner at the start and at the end of every combat, to all players. Off by default: tell your players before turning it on."
+      },
+      "CombatStartTexts": {
+        "Name": "Combat start texts",
+        "Hint": "One phrase is picked at random. Separate them with the | character. Empty: no banner at the start."
+      },
+      "CombatEndTexts": {
+        "Name": "Combat end texts",
+        "Hint": "One phrase is picked at random. Separate them with the | character. Empty: no banner at the end."
+      },
+      "CombatCardClient": {
+        "Name": "Show combat cards",
+        "Hint": "Uncheck to stop seeing the banners at the start and end of combats. Applies to this browser only."
       }
     },
     "Config": {
@@ -166,6 +195,29 @@
         "Low": "Contrast {ratio}:1 · Low (< 4.5:1)",
         "Image": "(background image not included)"
       }
+    },
+    "Scene": {
+      "Legend": "Automatic title card",
+      "Enabled": "Enable",
+      "Hint": "The card is shown to every player arriving on this scene (activation, scene change, token teleport). You only see it when the scene is active and your \"Automatic title cards for the GM\" setting is checked. Nothing secret here: players can read these fields.",
+      "GloballyOff": "Automatic cards are turned off in the module settings: nothing will be shown.",
+      "ModeLabel": "Display type",
+      "Mode": {
+        "banner": "Banner",
+        "full": "Full screen card"
+      },
+      "Title": "Title",
+      "Subtitle": "Subtitle (optional)",
+      "Tagline": "Ambience text (optional)",
+      "Image": "Background image (full screen only)",
+      "Sound": "Intro sound (optional)",
+      "Once": "Only once per game session",
+      "OnceHint": "Do not replay the card when a player comes back to the scene, until the next session number. The number only goes up when you send a card with the session counter enabled.",
+      "Preview": "Preview (me only)",
+      "Icon": "Automatic title card",
+      "IconOff": "Automatic title card (turned off in the settings)",
+      "DurationLabel": "Card duration",
+      "DurationHint": "Short, normal or long, depending on the display type. Players can skip the card after 1.5 s."
     }
   }
 }

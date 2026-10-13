@@ -20,7 +20,8 @@
     },
     "Overlay": {
       "Close": "Fermer pour tous (Échap)",
-      "CloseBanner": "Fermer le bandeau (Échap quand ce bouton a le focus)"
+      "CloseBanner": "Fermer le bandeau (Échap quand ce bouton a le focus)",
+      "Skip": "Passer (Échap)"
     },
     "Settings": {
       "FontFamily": {
@@ -69,6 +70,34 @@
       "MasterVolume": {
         "Name": "Volume du son d'intro",
         "Hint": "Multiplie le volume choisi par le MJ (réglage propre à votre navigateur)."
+      },
+      "AutoCardEnabled": {
+        "Name": "Cartes de titre automatiques par scène",
+        "Hint": "Interrupteur général : affiche la carte de titre configurée dans une scène quand on y arrive. Désactivé, plus aucune carte automatique n'apparaît, MJ compris."
+      },
+      "AutoCardGM": {
+        "Name": "Cartes de titre automatiques côté MJ",
+        "Hint": "Afficher aussi la carte au MJ quand il arrive sur la scène active. Les scènes non actives n'affichent jamais de carte au MJ (réglage propre à ce navigateur)."
+      },
+      "AutoCardClient": {
+        "Name": "Afficher les cartes de titre de scène",
+        "Hint": "Décochez pour ne plus voir les cartes de titre automatiques qui apparaissent quand vous arrivez sur une scène. Ne concerne que ce navigateur."
+      },
+      "CombatCardEnabled": {
+        "Name": "Cartes de combat automatiques",
+        "Hint": "Affiche un bandeau au début et à la fin de chaque combat, pour tous les joueurs. Désactivé par défaut : prévenez vos joueurs avant de l'activer."
+      },
+      "CombatStartTexts": {
+        "Name": "Textes de début de combat",
+        "Hint": "Une phrase est tirée au hasard. Séparez-les par le caractère |. Vide : aucun bandeau au début."
+      },
+      "CombatEndTexts": {
+        "Name": "Textes de fin de combat",
+        "Hint": "Une phrase est tirée au hasard. Séparez-les par le caractère |. Vide : aucun bandeau à la fin."
+      },
+      "CombatCardClient": {
+        "Name": "Afficher les cartes de combat",
+        "Hint": "Décochez pour ne plus voir les bandeaux de début et de fin de combat. Ne concerne que ce navigateur."
       }
     },
     "Config": {
@@ -166,6 +195,29 @@
         "Low": "Contraste {ratio}:1 · Faible (< 4,5:1)",
         "Image": "(hors image de fond)"
       }
+    },
+    "Scene": {
+      "Legend": "Carte de titre automatique",
+      "Enabled": "Activer",
+      "Hint": "La carte s'affiche pour chaque joueur qui arrive sur cette scène (activation, changement de scène, téléportation de token). Vous la voyez seulement si la scène est active et si votre réglage « Cartes de titre automatiques côté MJ » est coché. Rien de secret ici : les joueurs peuvent lire ces champs.",
+      "GloballyOff": "Les cartes automatiques sont désactivées dans les réglages du module : rien ne s'affichera.",
+      "ModeLabel": "Type d'affichage",
+      "Mode": {
+        "banner": "Bandeau",
+        "full": "Carte plein écran"
+      },
+      "Title": "Titre",
+      "Subtitle": "Sous-titre (optionnel)",
+      "Tagline": "Texte d'ambiance (optionnel)",
+      "Image": "Image de fond (plein écran uniquement)",
+      "Sound": "Son d'intro (optionnel)",
+      "Once": "Une seule fois par session de jeu",
+      "OnceHint": "Ne pas rejouer la carte quand un joueur revient sur la scène, jusqu'au prochain numéro de session. Le numéro n'avance que si vous lancez une carte avec le compteur de session activé.",
+      "Preview": "Aperçu (moi seul)",
+      "Icon": "Carte de titre automatique",
+      "IconOff": "Carte de titre automatique (désactivée dans les réglages)",
+      "DurationLabel": "Durée de la carte",
+      "DurationHint": "Court, normal ou long, selon le type d'affichage. Les joueurs peuvent passer la carte après 1,5 s."
     }
   }
 }

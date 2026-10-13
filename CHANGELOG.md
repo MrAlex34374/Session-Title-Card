@@ -2,6 +2,23 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
+## [1.3.0] - 2026-10-13
+
+### Ajouté
+- Carte de titre automatique par scène : un bloc dans la configuration de la scène (flag `autoCard`) décrit la carte (type d'affichage, durée Court/Normal/Long, titre, sous-titre, texte d'ambiance, image, son).
+- Elle s'affiche localement chez chaque joueur qui arrive sur la scène (activation, changement de scène, téléportation de token), sans passer par le socket.
+- Le MJ ne la voit que si la scène est active et si le réglage client « Cartes de titre automatiques côté MJ » est coché.
+- Option par scène « Une seule fois » : la carte n'est pas rejouée jusqu'au prochain numéro de session.
+- Les joueurs peuvent passer une carte automatique après 1,5 s (bouton, Échap ou clic). Une carte envoyée à la main par le MJ reste prioritaire.
+- Icône de clap dans le répertoire des scènes pour celles qui ont une carte.
+- Cartes de combat : bandeau au début et à la fin de chaque combat, phrases tirées au hasard dans des listes modifiables. Désactivées par défaut (réglage monde).
+- Interrupteur général monde « Cartes de titre automatiques par scène ».
+- Réglages client pour couper, chez soi, les cartes de scène et les cartes de combat.
+
+### Modifié
+- Les avertissements de carte invalide ne s'affichent plus qu'au MJ.
+- Bandeau : tailles minimales du sous-titre (16 px) et du texte d'ambiance (14 px).
+
 ## [1.2.2] - 2026-10-12
 
 ### Modifié

@@ -833,3 +833,47 @@ body.vtc-card-active .application.vtc-dialog {
     grid-template-columns: 1fr;
   }
 }
+
+/* Banner text never gets too small to read over the game. */
+.vtc-banner .vtc-subtitle {
+  font-size: max(16px, min(calc(var(--vtc-title-size) * var(--vtc-scale) * 0.32px), 5.5vw, 9vh));
+}
+
+.vtc-banner .vtc-tagline {
+  font-size: max(14px, min(calc(var(--vtc-title-size) * var(--vtc-scale) * 0.24px), 4.2vw, 6vh));
+}
+
+/* ---------- Scene configuration and directory ---------- */
+
+.vtc-scene-card {
+  margin-block: 1rem;
+  padding: 0.75rem 1rem 1rem;
+}
+
+.vtc-scene-card legend {
+  padding-inline: 0.5rem;
+}
+
+.vtc-scene-card .vtc-scene-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 0.9rem;
+}
+
+.vtc-scene-card .vtc-scene-fields[hidden] {
+  display: none;
+}
+
+.vtc-scene-card .form-group {
+  gap: 0.35rem 0.75rem;
+}
+
+.vtc-scene-card .form-group .hint {
+  margin: 0.15rem 0 0;
+}
+
+.vtc-scene-icon {
+  margin-inline-start: 0.4rem;
+  opacity: 0.8;
+}

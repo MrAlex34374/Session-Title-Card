@@ -140,7 +140,70 @@ export function registerSettings() {
     type: new fields.NumberField({required: true, nullable: false, min: 0, max: 1, step: 0.01, initial: 0.92})
   });
 
-  /* ---------- Client settings: each player's own audio preferences ---------- */
+  register("autoCardEnabled", {
+    name: "VTC.Settings.AutoCardEnabled.Name",
+    hint: "VTC.Settings.AutoCardEnabled.Hint",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: true
+  });
+
+  register("combatCardEnabled", {
+    name: "VTC.Settings.CombatCardEnabled.Name",
+    hint: "VTC.Settings.CombatCardEnabled.Hint",
+    scope: "world",
+    config: true,
+    type: Boolean,
+    default: false
+  });
+
+  register("combatStartTexts", {
+    name: "VTC.Settings.CombatStartTexts.Name",
+    hint: "VTC.Settings.CombatStartTexts.Hint",
+    scope: "world",
+    config: true,
+    type: String,
+    default: "Les armes sont tirées | Le calme se brise | L'affrontement commence"
+  });
+
+  register("combatEndTexts", {
+    name: "VTC.Settings.CombatEndTexts.Name",
+    hint: "VTC.Settings.CombatEndTexts.Hint",
+    scope: "world",
+    config: true,
+    type: String,
+    default: "Le silence retombe | La poussière retombe | Chacun reprend son souffle"
+  });
+
+  /* ---------- Client settings: each user's own preferences ---------- */
+
+  register("autoCardClient", {
+    name: "VTC.Settings.AutoCardClient.Name",
+    hint: "VTC.Settings.AutoCardClient.Hint",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true
+  });
+
+  register("combatCardClient", {
+    name: "VTC.Settings.CombatCardClient.Name",
+    hint: "VTC.Settings.CombatCardClient.Hint",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true
+  });
+
+  register("autoCardGM", {
+    name: "VTC.Settings.AutoCardGM.Name",
+    hint: "VTC.Settings.AutoCardGM.Hint",
+    scope: "client",
+    config: true,
+    type: Boolean,
+    default: true
+  });
 
   register("muteSound", {
     name: "VTC.Settings.MuteSound.Name",
