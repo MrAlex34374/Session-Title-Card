@@ -6,13 +6,17 @@ Le module est générique : rien n'est lié à une campagne en particulier. Il n
 
 ## Aperçu
 
-Le bandeau, en bas de l'écran, laisse le jeu utilisable :
+<p align="center">Le bandeau, en bas de l'écran, laisse le jeu utilisable :</p>
 
-![Bandeau](docs/images/bandeau.png)
+<p align="center">
+  <img src="docs/images/bandeau.png" alt="Bandeau" width="720">
+</p>
 
-La carte plein écran, avec une image de fond optionnelle :
+<p align="center">La carte plein écran, avec une image de fond optionnelle :</p>
 
-![Carte plein écran](docs/images/carte-plein-ecran.png)
+<p align="center">
+  <img src="docs/images/carte-plein-ecran.png" alt="Carte plein écran" width="720">
+</p>
 
 ## Installation par Manifest URL
 
