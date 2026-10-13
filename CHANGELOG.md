@@ -2,6 +2,13 @@
 
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 
+## [1.3.1] - 2026-10-13
+
+### Modifié
+- Identifiant du module : `session-title-card` (au lieu de l'ancien identifiant propre à une campagne). Les réglages monde, les flags de scène `autoCard` et la macro doivent être migrés une fois sur un monde existant.
+- README en anglais (`README.md`) et en français (`README.fr.md`), plus court, avec la documentation détaillée dans `docs/`.
+- Exemples de l'API sans nom de campagne.
+
 ## [1.3.0] - 2026-10-13
 
 ### Ajouté
@@ -43,7 +50,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 ### Modifié
 - Durées avancées affichées en secondes (stockage et presets toujours en millisecondes).
 - Bouton de fermeture plus visible (opacité 0,8, cible d'au moins 44 px, focus visible).
-- Palette ocre/crème sur noir chaud et titres en Modesto Condensed, cohérents avec la Gazette.
+- Palette ocre/crème sur noir chaud et titres de la fenêtre de configuration en Modesto Condensed.
 - Annonce lecteur d'écran déplacée vers une région dédiée.
 - Auteur harmonisé, licence MIT.
 

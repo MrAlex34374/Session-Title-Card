@@ -306,7 +306,7 @@ body.vtc-card-active .application.vtc-dialog {
   z-index: 2147483001 !important;
 }
 
-/* Warm black palette with ochre and cream accents, shared with the Gazette and the card's default colors. */
+/* Warm black palette with ochre and cream accents, matching the card's default colors. */
 .application.vtc-config {
   --vtc-bg: #14110c;
   --vtc-bg-raised: #1e1a12;

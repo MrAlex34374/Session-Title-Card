@@ -1,6 +1,6 @@
 /** Shared constants, i18n helper and game.settings registration. */
 
-export const MODULE_ID = "vyrmhal-title-card";
+export const MODULE_ID = "session-title-card";
 export const SOCKET = `module.${MODULE_ID}`;
 export const DEFAULT_FONT = "Signika";
 

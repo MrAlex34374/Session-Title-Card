@@ -20,8 +20,18 @@ jobs:
           jq --arg v "$VERSION" --arg d "https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/module.zip" '.version=$v | .download=$d' module.json > module.tmp
           mv module.tmp module.json
       - name: Archive
-        run: zip -r module.zip module.json scripts styles lang LICENSE README.md CHANGELOG.md
+        run: zip -r module.zip module.json scripts styles lang LICENSE README.md README.fr.md CHANGELOG.md
+      - name: Notes de version (modifications et correctifs du CHANGELOG)
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          awk -v v="$VERSION" '
+            /^## \[/ { if (found) exit; if (index($0, "[" v "]")) { found = 1; next } }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          if [ ! -s notes.md ]; then echo "Voir le CHANGELOG." > notes.md; fi
+          cat notes.md
       - name: Publier
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release create "$GITHUB_REF_NAME" module.json module.zip --title "$GITHUB_REF_NAME" --generate-notes
+        # Les notes du CHANGELOG passent en premier, puis GitHub ajoute la liste des commits et le lien Full Changelog.
+        run: gh release create "$GITHUB_REF_NAME" module.json module.zip --title "$GITHUB_REF_NAME" --notes-file notes.md --generate-notes

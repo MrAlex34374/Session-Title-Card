@@ -163,7 +163,7 @@ const getApi = () => game.modules.get(MODULE_ID).api;
 
 export class TitleCardConfig extends ApplicationV2 {
   static DEFAULT_OPTIONS = {
-    id: "vyrmhal-title-card-config",
+    id: "session-title-card-config",
     classes: ["vtc-config"],
     window: {title: "VTC.Config.Title", icon: "fa-solid fa-clapperboard"},
     position: {width: 600},

@@ -13,7 +13,7 @@ import {AUTO_FLAG, resolveAutoCard, onRenderSceneConfig, onRenderSceneDirectory}
 
 const COUNTER_PATTERN = /\{\{\s*n\s*\}\}/g;
 
-const TOOL_NAME = "vyrmhalTitleCard";
+const TOOL_NAME = "sessionTitleCard";
 const MACRO_FLAG = "configMacro";
 
 /* -------------------------------------------- */

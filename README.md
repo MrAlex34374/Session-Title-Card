@@ -1,281 +1,145 @@
-# Session Title Card (vyrmhal-title-card)
+<!-- Synced with README.fr.md at version 1.3.1 -->
+English | [Français](README.fr.md)
 
-Module Foundry VTT qui affiche une carte de titre cinématique au centre de l'écran de tous les joueurs connectés, déclenchée par le MJ juste avant le début d'une session. Le style par défaut vise une fantasy sérieuse et sobre : fond noir, titre en capitales espacées couleur crème, sous-titre ocre, ombre douce.
+<div align="center">
 
-Le module est générique : rien n'est lié à une campagne en particulier. Il n'a aucune dépendance externe, aucun build, et ne fait aucun appel réseau (seuls l'image et le son choisis sont chargés depuis votre propre serveur Foundry).
+# Session Title Card
 
-## Aperçu
+**A clean title card on all your players' screens, in two clicks.**
 
-<p align="center">Le bandeau, en bas de l'écran, laisse le jeu utilisable :</p>
+![Version 1.3.1](https://img.shields.io/badge/version-1.3.1-blue?style=flat-square)
+![MIT license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+![Foundry VTT v13 to v14](https://img.shields.io/badge/Foundry%20VTT-v13%20%7C%20v14-orange?style=flat-square)
+![Languages EN and FR](https://img.shields.io/badge/languages-EN%20%7C%20FR-lightgrey?style=flat-square)
 
-<p align="center">
-  <img src="docs/images/bandeau.png" alt="Bandeau" width="720">
-</p>
+[Installation](#installation) · [Quick start](#quick-start) · [Automatic cards](#automatic-cards) · [Settings](#settings) · [Troubleshooting](#troubleshooting)
 
-<p align="center">La carte plein écran, avec une image de fond optionnelle :</p>
+</div>
 
-<p align="center">
-  <img src="docs/images/carte-plein-ecran.png" alt="Carte plein écran" width="720">
-</p>
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/images/full-screen-card.png" alt="Full screen card: dark background, cream title in spaced capitals, ochre subtitle and italic ambience text" width="100%"><br>
+      <sub>Full screen card</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/images/banner.png" alt="Banner at the bottom of the screen: the same text over a dark gradient, the game stays visible behind" width="100%"><br>
+      <sub>Banner: the game stays usable</sub>
+    </td>
+  </tr>
+</table>
 
-## Installation par Manifest URL
+## What it does
 
-Dans Foundry : **Add-on Modules → Install Module**, collez cette adresse dans le champ **Manifest URL**, puis **Install** :
+| | |
+| --- | --- |
+| **Full screen card** | Title, subtitle, ambience text, background image and intro sound, with fades. |
+| **Banner** | Announces a place or a date at the bottom of the screen, without blocking the game. |
+| **Per-scene card** | Shows up by itself when a player arrives on the scene. |
+| **Combat card** | Banner at the start and at the end of every combat (off by default). |
+
+- **Fast**: title, subtitle, live preview, then "Show to everyone".
+- **In control**: choose the recipients, presets, automatic session number (`{{n}}`).
+- **Player friendly**: everyone can skip or turn off automatic cards on their side.
+- **Lightweight**: no dependency, no network call, works with any game system.
+
+## Installation
+
+In Foundry: **Add-on Modules**, then **Install Module**. Paste the address below into **Manifest URL**, click **Install**, then enable the module in your world.
 
 ```
 https://github.com/MrAlex34374/Session-Title-Card/releases/latest/download/module.json
 ```
 
-Activez ensuite le module dans votre monde (Foundry v13 minimum, v14 vérifiée).
+<details>
+<summary>Manual installation (copy the folder)</summary>
 
-## Compatibilité
+1. Copy the `session-title-card` folder into `Data/modules`.
+2. Check that `module.json` sits directly in that folder.
+3. Reload the module list (back to the setup screen, then relaunch the world).
+4. In the world: **Manage Modules**, tick **Session Title Card**.
 
-- Foundry VTT 13 minimum, vérifié pour la 14 (lecture du code source de la 14.365 et de la 14.366).
-- Indépendant du système de jeu (D&D 5e ou autre).
-- Interface en français et en anglais, selon la langue choisie dans Foundry.
+</details>
 
-## Installation
+## Quick start
 
-Installation manuelle, par copie du dossier :
+1. Open the window: the **Title Card** tool (clapperboard icon) in the token controls, or the **Title Card** macro created automatically.
+2. Type a title and a subtitle, pick *Full screen card* or *Banner*, then a duration.
+3. Click **Show to everyone**. To try it on your own screen first: **Preview (me only)**.
 
-1. Copiez le dossier `vyrmhal-title-card` dans le dossier `Data/modules` de votre installation Foundry.
-2. Vérifiez que le fichier `module.json` se trouve directement dans ce dossier (et non dans un sous-dossier supplémentaire).
-3. Redémarrez Foundry ou rechargez la liste des modules (retour à la page d'accueil, puis relance du monde).
-4. Dans le monde, ouvrez `Paramètres > Gérer les modules`, cochez **Session Title Card** et validez. Le monde se recharge.
+> [!TIP]
+> Esc or the button at the bottom right closes the card for everyone. The banner only closes with its button.
 
-Au premier lancement en tant que MJ, une macro **Carte de titre** est créée automatiquement dans le répertoire des macros (voir plus bas).
+## Automatic cards
 
-## Utilisation
+**Per scene.** In a scene's configuration, the **Automatic title card** block describes a card shown to every player who arrives on the scene (activation, scene change, token teleport).
 
-### Ouvrir la fenêtre de configuration (MJ uniquement)
+- Players can skip it after 1.5 s, or turn these cards off in their own settings.
+- A card you send by hand always takes priority.
+- The **Only once** option does not replay the card before the next session number.
 
-Trois façons de l'ouvrir :
+> [!WARNING]
+> Players can read the content of that block (browser console). Put no secret in it.
 
-- l'outil **Carte de titre** (icône de clap) dans la barre de contrôles de scène, dans le groupe des contrôles de jetons, visible uniquement par le MJ ;
-- la macro **Carte de titre**, créée automatiquement ;
-- une macro personnalisée : `game.modules.get("vyrmhal-title-card").api.openConfig();`
+**In combat.** A banner announces the start and the end of every combat, with a phrase picked at random from your lists (separated by `|`).
 
-### Champs de la fenêtre
+> [!IMPORTANT]
+> Combat cards are off by default. Tell your players before you turn on **Automatic combat cards**.
 
-- **Type d'affichage** : carte plein écran ou bandeau (voir plus bas).
-- **Titre** : texte principal. `{{n}}` y est remplacé par le numéro de session si le compteur est activé.
-- **Sous-titre** : optionnel.
-- **Texte d'ambiance** : optionnel, petit et en italique (date, lieu...).
-- **Image de fond** : optionnelle, choisie avec le sélecteur de fichiers.
-- **Son d'intro** et **volume** : optionnels.
-- **Fondu d'entrée, durée d'affichage, fondu de sortie** : saisis en secondes dans les options avancées (par défaut 1,5, 5 et 1,5). Les presets et l'API restent en millisecondes. La vue rapide propose Court (x0,5), Normal et Long (x2).
-- **Opacité du fond noir** : de 0 à 1, par défaut 0,92.
-- **Compteur de session** : voir plus bas.
-- **Diffusion** : choix des destinataires (voir plus bas).
-- **Presets** : charger, enregistrer, supprimer.
+## Settings
 
-La fenêtre s'ouvre sur la vue **Lancer vite** : titre, sous-titre, n° de session, type d'affichage, durée Court/Normal/Long, aperçu miniature en direct avec un badge de contraste WCAG (OK à partir de 4,5:1, calculé contre le pire fond possible sous le voile noir), puis les boutons Aperçu / Afficher à tous. Le bouton **Options avancées** déploie les onglets : Textes, Image et son, Durées et fond, Diffusion, Presets. Les boutons du bas restent visibles dans les deux vues.
+In **Game Settings, Configure Settings, Session Title Card**.
 
-Les valeurs saisies sont mémorisées dans votre navigateur et restaurées à la prochaine ouverture.
+| Setting | Scope | Default |
+| --- | --- | --- |
+| Font, colors, title size, shadow | World | Signika, `#f2e6c9` / `#c9b98f`, 72 px, soft |
+| Full screen card durations and opacity | World | 1.5 s / 5 s / 1.5 s, 0.92 |
+| Automatic per-scene title cards | World | On |
+| Automatic combat cards and their phrases | World | Off |
+| Intro sound and volume | Each player | Sound on, volume 0.8 |
+| Show scene cards, combat cards, GM side | Each user | On |
 
-### Boutons
+Every setting, the window and the exact behavior are described in the [detailed documentation](docs/DETAILS.md). The API for your macros is in [docs/API.md](docs/API.md).
 
-- **Afficher à tous** : diffuse la carte à tous les clients connectés, MJ compris.
-- **Aperçu (moi seul)** : affiche la carte uniquement chez vous, sans toucher au compteur de session.
-- **Fermer la carte** : ferme la carte chez tout le monde.
+## Troubleshooting
 
-### Bandeau (mode "banner")
+<details>
+<summary>A player sees nothing</summary>
 
-Pour annoncer un lieu ou une date en cours de partie sans couper le jeu, choisissez **Bandeau (bas de l'écran)** :
+Check the **Audience** tab (they may be unticked), that the player is connected when you click, and that you are logged in with a GM role account (an "assistant GM" account is not treated as a GM).
 
-- le texte s'affiche en bas de l'écran, sur un dégradé sombre, plus petit que la carte plein écran ;
-- il ne bloque aucun clic et n'utilise pas d'image de fond ;
-- les durées par défaut sont plus courtes (1000, 3500 et 1000 ms) et le voile est plus léger (0,75) ; ces valeurs ne sont pas dans les réglages du module ;
-- changer le type dans la fenêtre remplace automatiquement les durées qui n'ont pas été modifiées à la main ;
-- **Échap ne le ferme pas** (il garde son rôle habituel dans Foundry) : le MJ utilise le petit bouton en bas à droite ;
-- le son et le compteur fonctionnent comme pour la carte plein écran.
+</details>
 
-### Préchargement
+<details>
+<summary>No sound for a player</summary>
 
-Le bouton **Précharger chez les joueurs** (onglet Image et son) fait charger l'image et le son dans le navigateur des joueurs, pour que la carte s'affiche sans retard ni apparition tardive de l'image. À faire quelques secondes avant d'afficher, surtout avec une grande image. Les joueurs qui ont désactivé le son ne chargent pas le fichier audio. Équivalent en macro : `api.preload({image, sound})`.
+Browsers block audio until the page has received a click. The player must have clicked once in the page, check that "Disable intro sound" is unticked and that their interface volume is not at zero.
 
-### Choisir les destinataires
+</details>
 
-L'onglet **Diffusion** liste les autres utilisateurs du monde, connectés ou non. Décochez ceux qui ne doivent pas recevoir la carte (par exemple pour une carte réservée à un joueur). Le choix s'applique à **Afficher à tous** et au préchargement, il est conservé tant que la page n'est pas rechargée, et la liste suit les connexions chaque fois que l'onglet est ouvert. Si tous les utilisateurs connectés sont cochés, la carte est diffusée normalement. Une alerte indique le nombre d'utilisateurs ciblés quand le choix est restreint. La fermeture ("Fermer la carte") s'adresse toujours à tout le monde.
+<details>
+<summary>The image does not show</summary>
 
-L'aperçu (moi seul) reste le moyen de voir la carte avant de l'envoyer.
+The path must be local, relative to the Foundry root (for example `assets/map.webp`), without `..`, with an image extension. Videos are not accepted. The banner does not use an image.
 
-### Fermer la carte
+</details>
 
-Le MJ peut fermer la carte pour tout le monde à tout moment avec la touche **Échap** (carte plein écran ; sans effet pendant la saisie dans un champ) ou avec le bouton visible en bas à droite de l'overlay (44 px minimum, anneau de focus). Pour un bandeau, Échap ne le ferme que si son bouton a le focus. La fermeture se fait par un fondu court (800 ms maximum). Les joueurs n'ont ni bouton ni raccourci pour la fermer.
+<details>
+<summary>The automatic card does not show</summary>
 
-### Compteur de session
+Check that "Enable" is ticked in the scene block, that the world setting "Automatic per-scene title cards" is on, and that the scene is active if you test as the GM. The browser console (F12) tells you why for combat cards, on lines starting with `session-title-card |`.
 
-Cochez **Activer le compteur** pour que `{{n}}` soit remplacé par le numéro choisi dans le champ **Numéro à afficher**. À chaque clic sur **Afficher à tous**, le numéro affiché est enregistré comme dernier numéro de session, et le champ propose automatiquement le suivant. Vous pouvez corriger ce numéro à la main avant l'affichage. L'aperçu ne modifie jamais le compteur.
+</details>
 
-Si le texte contient `{{n}}` alors que le compteur est désactivé, le motif est affiché tel quel et une alerte vous le signale.
+<details>
+<summary>The module or the tool does not appear</summary>
 
-### Presets
+Check that `module.json` sits directly in `Data/modules/session-title-card` and that the module is enabled. The tool is only visible to the GM, in the token controls group.
 
-Un preset enregistre le titre, le sous-titre, le texte d'ambiance, l'image, le son, le volume, les durées et l'opacité. Les presets sont stockés dans un réglage monde (donc partagés par tous les MJ du monde, invisibles pour les joueurs). Enregistrer sous un nom déjà utilisé demande confirmation avant de remplacer.
+</details>
 
-## Carte de titre automatique par scène
+## Compatibility and license
 
-Dans la configuration d'une scène (onglet de base), le bloc « Carte de titre automatique » décrit une carte : titre (le nom de la scène par défaut), sous-titre, texte d'ambiance, type d'affichage (bandeau par défaut ou plein écran), image (plein écran seulement) et son. Elle est stockée dans le flag `flags.vyrmhal-title-card.autoCard` de la scène. Les scènes qui en ont une portent une icône de clap dans le répertoire des scènes.
+Foundry VTT v13 minimum, v14 verified. Independent of the game system. Known limit: the per-scene card triggers when the player's view changes scene, so token teleports are only covered when they change that view.
 
-- Chaque joueur voit la carte à son arrivée sur la scène : activation par le MJ, changement de scène ou téléportation de token. Un joueur resté sur une autre scène n'est pas concerné.
-- Elle apparaît quand le canevas du joueur charge la scène. Le déclencheur « token » suppose donc que la téléportation change la scène vue par le joueur : à vérifier avec votre module de téléportation.
-- Le MJ la voit seulement quand la scène est active et que son réglage client « Cartes de titre automatiques côté MJ » est coché (coché par défaut).
-- Elle n'est pas rejouée au rechargement de la page ni quand la même scène est redessinée. Elle est rejouée si l'on revient sur la scène après être passé par une autre, sauf avec l'option « Une seule fois », qui vaut jusqu'au prochain numéro de session. Le numéro n'avance que si vous lancez une carte avec le compteur de session activé ; sans cela, « une seule fois » vaut pour toujours.
-- Une carte envoyée à la main par le MJ reste affichée : la carte automatique ne la remplace pas. Une carte automatique, elle, est remplacée par la suivante.
-- Chaque utilisateur peut couper ces cartes chez lui avec le réglage client « Afficher les cartes de titre de scène ».
-- Les joueurs peuvent passer la carte (bouton « Passer », Échap ou clic en plein écran) après 1,5 s. Les durées sont plafonnées : affichage 15 s, fondus 3 s.
-- La durée se choisit par scène (Court, Normal, Long), comme dans la fenêtre du MJ : elle multiplie par 0,5, 1 ou 2 les durées par défaut du type d'affichage. L'opacité et le volume viennent des valeurs par défaut du module. Un plein écran apparaît en fondu depuis le noir.
-- `{{n}}` est remplacé par le dernier numéro de session enregistré, sans l'incrémenter. Tant que le compteur vaut 0, le motif est retiré. L'aperçu applique la même règle.
-- Rien de secret dans ces champs : le flag de scène est lisible par les joueurs (console du navigateur).
-- Interrupteur général : réglage monde « Cartes de titre automatiques par scène », qui sert aussi de coupe-circuit.
-
-## Cartes de combat
-
-Un bandeau s'affiche chez tous les joueurs au début et à la fin de chaque combat (hooks `updateCombat` et `deleteCombat`, qui partent sur tous les clients, contrairement à `combatStart` que seul le MJ reçoit ; seulement pour les combats de la scène vue ; la fin ne s'annonce que si le début l'a été). Un joueur qui se connecte en plein combat ne voit pas de bandeau de début. La phrase est tirée au hasard dans une liste que vous modifiez dans les réglages (séparateur `|`). C'est désactivé par défaut : activez « Cartes de combat automatiques » (réglage monde) après avoir prévenu vos joueurs. Chacun, MJ compris, peut les couper chez lui avec « Afficher les cartes de combat ». Une carte envoyée à la main reste prioritaire.
-
-## Réglages
-
-Réglages monde (modifiables par le MJ dans `Paramètres > Configurer les paramètres > Session Title Card`) :
-
-- police (liste construite depuis `CONFIG.fontDefinitions`, par défaut Signika) ;
-- couleur du titre (`#f2e6c9`), couleur du sous-titre (`#c9b98f`), taille du titre (72 px au maximum, réduite automatiquement sur petit écran) ;
-- ombre portée : aucune, douce, marquée ;
-- durées par défaut et opacité par défaut du fond.
-
-Réglages client (propres à chaque navigateur, donc à chaque joueur) :
-
-- **Désactiver le son d'intro** ;
-- **Volume du son d'intro** : multiplie le volume choisi par le MJ.
-
-Le style (police, couleurs, taille, ombre) est lu sur chaque client dans les réglages du monde. Il n'est pas transmis dans le message socket.
-
-## API publique et exemples de macro
-
-```js
-const api = game.modules.get("vyrmhal-title-card").api;
-```
-
-Méthodes (réservées au MJ, un joueur qui les appelle reçoit un avertissement) :
-
-- `api.show(options)` : affiche la carte à tous. Retourne une promesse qui vaut `true` si une carte a été affichée.
-- `api.preview(options)` : même chose, mais chez le MJ uniquement.
-- `api.preload(options)` : précharge `image` et `sound` chez les joueurs (`recipients` accepté). Retourne `true` si au moins un fichier valide a été trouvé.
-- `api.close()` : ferme la carte pour tout le monde.
-- `api.openConfig()` : ouvre la fenêtre de configuration.
-
-Options de `show` et `preview` (toutes optionnelles, mais au moins un texte est nécessaire) :
-
-| Option | Rôle |
-| --- | --- |
-| `title`, `subtitle`, `tagline` | Textes (200, 300 et 300 caractères maximum) |
-| `image` | Chemin local d'une image de fond |
-| `sound` | Chemin local d'un fichier audio |
-| `volume` | Volume du son, de 0 à 1 (0,8 par défaut) |
-| `fadeIn`, `hold`, `fadeOut` | Durées en ms (valeurs par défaut des réglages si absentes) |
-| `opacity` | Opacité du fond noir, de 0 à 1 |
-| `mode` | `"full"` (par défaut) ou `"banner"` |
-| `recipients` | Tableau d'identifiants d'utilisateurs ciblés. Absent : tous les utilisateurs connectés. Tableau vide : personne d'autre que le MJ |
-| `n` | Numéro de session qui remplace `{{n}}` |
-| `incrementCounter` | `true` pour utiliser le numéro suivant et l'enregistrer (ignoré par `preview`) |
-
-`{{n}}` n'est remplacé que si `n` ou `incrementCounter` est fourni.
-
-Exemple minimal :
-
-```js
-game.modules.get("vyrmhal-title-card").api.show({
-  title: "Vyrmhal",
-  subtitle: "Chapitre premier",
-  tagline: "Le 14 du mois des moissons, Port-Aubier"
-});
-```
-
-Exemple complet, avec image, son et durées :
-
-```js
-game.modules.get("vyrmhal-title-card").api.show({
-  title: "Session 12",
-  subtitle: "Les cendres de Vyrmhal",
-  tagline: "Trois jours après la chute du pont",
-  image: "assets/cartes/vyrmhal-nuit.webp",
-  sound: "sounds/intro/cor-lointain.ogg",
-  volume: 0.7,
-  fadeIn: 2000,
-  hold: 6000,
-  fadeOut: 2000,
-  opacity: 0.9
-});
-```
-
-Exemple avec compteur automatique (le numéro suivant est utilisé puis enregistré) :
-
-```js
-game.modules.get("vyrmhal-title-card").api.show({
-  title: "Session {{n}}",
-  subtitle: "Les cendres de Vyrmhal",
-  incrementCounter: true
-});
-```
-
-Bandeau de changement de lieu, réservé à deux joueurs :
-
-```js
-const api = game.modules.get("vyrmhal-title-card").api;
-const joueurs = game.users.filter(u => !u.isGM && ["Alice", "Bruno"].includes(u.name)).map(u => u.id);
-api.show({mode: "banner", title: "Port-Aubier", tagline: "14 Solvin 4721", recipients: joueurs});
-```
-
-Précharger puis afficher :
-
-```js
-const api = game.modules.get("vyrmhal-title-card").api;
-api.preload({image: "assets/cartes/vyrmhal-nuit.webp", sound: "sounds/intro/cor-lointain.ogg"});
-await new Promise(r => setTimeout(r, 4000));
-api.show({title: "Session 12", image: "assets/cartes/vyrmhal-nuit.webp", sound: "sounds/intro/cor-lointain.ogg"});
-```
-
-Fermer la carte depuis une macro :
-
-```js
-game.modules.get("vyrmhal-title-card").api.close();
-```
-
-## Comportement détaillé
-
-- **Chronologie** : le fond noir apparaît en fondu, puis le titre, puis le sous-titre et le texte d'ambiance avec un léger décalage (30 % du fondu d'entrée, 600 ms au maximum). La durée d'affichage commence quand le dernier texte est entièrement visible, puis le fondu de sortie démarre. La durée totale est donc `fondu d'entrée + décalages + durée d'affichage + fondu de sortie`.
-- **Carte déjà affichée** : une nouvelle carte remplace l'ancienne sans empilement. Le voile noir reste continu pour éviter un flash du jeu, et tous les timers et sons de l'ancienne carte sont libérés.
-- **Joueur qui se connecte pendant l'affichage** : il ne voit rien, c'est voulu.
-- **Clics** : l'overlay bloque les clics pendant l'affichage. Dès que le fondu de sortie commence, il ne bloque plus rien, et il est retiré du DOM à la fin.
-- **Image de fond** : elle est dessinée par dessus le voile noir, avec une opacité de 55 % et une vignette qui garde le texte lisible. L'opacité du fond noir règle donc la part de jeu visible derrière la carte. L'opacité de l'image peut être changée avec une règle CSS sur `--vtc-image-opacity`, par exemple via un module de CSS personnalisé.
-- **Mouvement réduit** : si le navigateur du joueur demande `prefers-reduced-motion`, il n'y a plus de décalage ni de déplacement, seulement des fondus de 400 ms au maximum.
-- **Petits écrans et multi-écrans** : l'overlay couvre la fenêtre du navigateur (et non un écran précis), les tailles de texte se réduisent selon la largeur et la hauteur, et les marges respectent les zones sûres des appareils mobiles. Si Foundry est étendu sur plusieurs écrans, la carte est centrée sur la fenêtre entière.
-- **Son** : joué sur le canal interface de Foundry, avec le volume choisi multiplié par le volume client. Il s'estompe pendant le fondu de sortie et s'arrête si la carte est fermée ou remplacée.
-
-## Sécurité
-
-- Le serveur Foundry relaie les sockets de module et ajoute aux récepteurs l'identifiant de l'utilisateur qui a émis le message, d'après sa session. Chaque client utilise cet identifiant, qui ne peut pas être falsifié, et ignore tout message dont l'émetteur n'est pas un MJ connecté. Cette information a été vérifiée dans le code de la version 14. L'identifiant écrit dans le contenu du message est ignoré : si le serveur ne fournit pas l'émetteur, le message est rejeté.
-- Dans tous les cas, le contenu reçu est assaini : textes tronqués et insérés avec `textContent` (jamais `innerHTML`), nombres bornés, chemins limités aux fichiers locaux d'image et d'audio (pas d'URL externe, pas de `..`). Les demandes de préchargement suivent les mêmes règles.
-- La restriction des destinataires est appliquée par le serveur : les utilisateurs non ciblés ne reçoivent pas le message.
-- Les chemins invalides sont ignorés avec une alerte discrète au MJ, sans casser l'affichage de la carte.
-
-## Choix faits sans vous demander
-
-- Le groupe de contrôles choisi pour l'outil est celui des jetons, présent dans toutes les scènes.
-- La macro automatique n'est créée qu'une fois : si vous la supprimez ensuite, elle n'est pas recréée (un réglage monde mémorise qu'elle a été traitée). Elle est aussi ignorée si une macro porte déjà le même nom.
-- L'image de fond accepte les formats d'image reconnus par Foundry, pas les vidéos.
-- Les presets enregistrent aussi le texte d'ambiance, le volume et l'opacité, en plus de ce qui était demandé.
-- Le bandeau n'accepte pas d'image de fond et a ses propres valeurs par défaut, fixes.
-- Le préchargement n'est pas automatique : il se déclenche par le bouton ou par `api.preload`.
-- La police se règle dans les paramètres du module, pas dans la fenêtre de configuration, car le style est commun à toutes les cartes.
-
-## Dépannage
-
-- **Le module n'apparaît pas dans la liste** : vérifiez que `module.json` est directement dans `Data/modules/vyrmhal-title-card`, puis rechargez la liste des modules.
-- **L'outil n'apparaît pas dans la barre de contrôles** : il est visible uniquement pour le MJ, dans le groupe des jetons. Vérifiez que le module est activé dans le monde.
-- **Un joueur ne voit rien** : vérifiez d'abord l'onglet Diffusion (il est peut-être décoché). Ensuite : il doit être connecté au moment où le MJ clique. Vérifiez aussi que le MJ est bien connecté avec un compte de rôle MJ (un compte "assistant" n'est pas considéré comme MJ).
-- **Pas de son chez un joueur** : les navigateurs bloquent l'audio tant que la page n'a reçu aucun clic ou touche. Le joueur doit avoir interagi une fois avec la page (le message Foundry de déverrouillage audio peut apparaître). Il doit aussi vérifier que la case "Désactiver le son d'intro" est décochée et que son volume d'interface Foundry n'est pas à zéro.
-- **L'image ne s'affiche pas** : l'alerte du MJ donne la cause probable. Le chemin doit être local, relatif à la racine de Foundry (par exemple `assets/carte.webp`), sans `..` et avec une extension d'image valide.
-- **La police n'apparaît pas** : la police doit être enregistrée dans Foundry (`CONFIG.fontDefinitions` ou les polices personnalisées du jeu). Sinon Signika est utilisée.
-- **La carte reste à l'écran** : le MJ peut appuyer sur Échap ou utiliser le bouton de fermeture. Si le MJ s'est déconnecté pendant l'affichage, la carte se retire d'elle-même à la fin de la durée prévue.
-- **Messages d'erreur** : ouvrez la console du navigateur (F12) et cherchez les lignes commençant par `vyrmhal-title-card |`.
+[Report a problem](https://github.com/MrAlex34374/Session-Title-Card/issues) · [Changelog](CHANGELOG.md) · [MIT license](LICENSE)
