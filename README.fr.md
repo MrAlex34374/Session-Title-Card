@@ -31,7 +31,7 @@
 
 ## Ce que fait le module
 
-| | |
+| Type | Description |
 | --- | --- |
 | **Carte plein écran** | Titre, sous-titre, texte d'ambiance, image de fond et son d'intro, avec fondus. |
 | **Bandeau** | Annonce un lieu ou une date en bas de l'écran, sans bloquer le jeu. |
@@ -84,11 +84,11 @@ https://github.com/MrAlex34374/Session-Title-Card/releases/latest/download/modul
 **Au combat.** Un bandeau annonce le début et la fin de chaque combat, avec une phrase tirée au hasard dans vos listes (séparées par `|`).
 
 > [!IMPORTANT]
-> Les cartes de combat sont désactivées par défaut. Prévenez vos joueurs avant d'activer **Cartes de combat automatiques**.
+> Les cartes de combat sont désactivées par défaut.
 
 ## Réglages
 
-Dans **Paramètres, Configurer les paramètres, Session Title Card**.
+Dans **Paramètres > Configurer les paramètres > Session Title Card**.
 
 | Réglage | Portée | Par défaut |
 | --- | --- | --- |
