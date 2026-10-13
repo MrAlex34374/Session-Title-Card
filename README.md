@@ -4,6 +4,16 @@ Module Foundry VTT qui affiche une carte de titre cinématique au centre de l'é
 
 Le module est générique : rien n'est lié à une campagne en particulier. Il n'a aucune dépendance externe, aucun build, et ne fait aucun appel réseau (seuls l'image et le son choisis sont chargés depuis votre propre serveur Foundry).
 
+## Aperçu
+
+Le bandeau, en bas de l'écran, laisse le jeu utilisable :
+
+![Bandeau](docs/images/bandeau.png)
+
+La carte plein écran, avec une image de fond optionnelle :
+
+![Carte plein écran](docs/images/carte-plein-ecran.png)
+
 ## Installation par Manifest URL
 
 Dans Foundry : **Add-on Modules → Install Module**, collez cette adresse dans le champ **Manifest URL**, puis **Install** :
