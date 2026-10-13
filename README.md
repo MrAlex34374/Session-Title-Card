@@ -31,7 +31,7 @@ English | [Français](README.fr.md)
 
 ## What it does
 
-| | |
+| Type | Description |
 | --- | --- |
 | **Full screen card** | Title, subtitle, ambience text, background image and intro sound, with fades. |
 | **Banner** | Announces a place or a date at the bottom of the screen, without blocking the game. |
@@ -84,11 +84,11 @@ https://github.com/MrAlex34374/Session-Title-Card/releases/latest/download/modul
 **In combat.** A banner announces the start and the end of every combat, with a phrase picked at random from your lists (separated by `|`).
 
 > [!IMPORTANT]
-> Combat cards are off by default. Tell your players before you turn on **Automatic combat cards**.
+> Combat cards are off by default..
 
 ## Settings
 
-In **Game Settings, Configure Settings, Session Title Card**.
+In **Settings > Game Settings > Session Title Card**.
 
 | Setting | Scope | Default |
 | --- | --- | --- |
