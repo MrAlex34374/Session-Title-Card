@@ -9,6 +9,9 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/).
 - README en anglais (`README.md`) et en français (`README.fr.md`), plus court, avec la documentation détaillée dans `docs/`.
 - Exemples de l'API sans nom de campagne.
 
+### Corrigé
+- Fenêtre de la carte : les boutons Court / Normal / Long de la durée n'appliquaient rien (le formulaire décochait le bouton avant que le choix soit pris en compte).
+
 ## [1.3.0] - 2026-10-13
 
 ### Ajouté

@@ -309,8 +309,14 @@ export class TitleCardConfig extends ApplicationV2 {
     advanced.append(nav, body);
 
     form.append(this.#buildQuick(state), this.#buildAdvancedToggle(), advanced, footer);
-    form.addEventListener("input", () => this.#onFormChange());
-    form.addEventListener("change", () => this.#onFormChange());
+    // The quick duration radios apply their own values, then refresh the form themselves. If the form listeners
+    // ran first (a radio fires "input" before "change"), they would uncheck the radio before it could apply.
+    const onFormEvent = event => {
+      if (event.target?.name === "durationPreset") return;
+      this.#onFormChange();
+    };
+    form.addEventListener("input", onFormEvent);
+    form.addEventListener("change", onFormEvent);
     this.#syncMode();
     this.#showTab(this.#tab);
     this.#refreshPresets();
